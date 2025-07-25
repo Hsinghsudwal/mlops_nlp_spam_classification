@@ -1,0 +1,29 @@
+# NLP Spam Ham classification Configuration
+
+project:
+  project_name: "spam-ham-classification"
+  author: "Harinder Singh Sudwal"
+
+base:
+  pipeline_name: "text_classification_pipeline"
+  target_column: "label"
+  test_size: 0.2
+  random_state: 42
+
+storage:
+  mode: "local"  # options: local | s3 | localstack
+  path: "outputs"  # used for local mode
+  bucket_name: "my-ml-artifacts"  # used for s3/localstack mode
+  region: "us-west-2"
+  endpoint_url: null  # set to http://localhost:4566 for LocalStack
+  use_ssl: false
+
+artifact_path:
+  raw_path: "raw"
+  train: "train.csv"
+  test: "test.csv"
+  processed: "transformed"
+  models: "models"
+  metrics: "metrics"
+  logs: "logs"
+  reports: "reports"

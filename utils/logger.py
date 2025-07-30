@@ -19,18 +19,16 @@ class Logger:
         # Set log level
         level = getattr(logging, log_level.upper())
         self.logger.setLevel(level)
-
-        # Create handlers
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(level)
-
+        
         # Create formatters
         formatter = logging.Formatter(
             "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         )
-        console_handler.setFormatter(formatter)
 
-        # Add handlers
+        # Create handlers
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(level)
+        console_handler.setFormatter(formatter)
         self.logger.addHandler(console_handler)
 
         # Create logs directory if it doesn't exist

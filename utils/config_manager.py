@@ -6,25 +6,25 @@ from utils.logger import logger
 
 
 class ConfigManager:
-    def __init__(self, config_dict: Optional[Dict[str, Any]] = None):
-        self.config_dict = config_dict or {}
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
+        self.config = config or {}
         logger.info("ConfigManager initialized with configuration.")
 
     @classmethod
-    def load_file(cls, config_file: str) -> 'ConfigManager':
+    def load_file(cls, path: str) -> 'ConfigManager':
         """Load configuration from a YAML or JSON file."""
-        if not os.path.isfile(config_file):
-            logger.error(f"Config file not found: {config_file}")
-            raise FileNotFoundError(f"Config file not found: {config_file}")
+        if not os.path.isfile(path):
+            logger.error(f"Config file not found: {path}")
+            raise FileNotFoundError(f"Config file not found: {path}")
 
         try:
-            with open(config_file, "r") as file:
-                if config_file.endswith((".yml", ".yaml")):
+            with open(path, "r") as file:
+                if path.endswith((".yml", ".yaml")):
                     config_data = yaml.safe_load(file)
-                    logger.info(f"Loaded YAML config from {config_file}")
-                elif config_file.endswith(".json"):
+                    logger.info(f"Loaded YAML config from {path}")
+                elif path.endswith(".json"):
                     config_data = json.load(file)
-                    logger.info(f"Loaded JSON config from {config_file}")
+                    logger.info(f"Loaded JSON config from {path}")
                 else:
                     raise ValueError("Unsupported config file format. Use .json, .yml or .yaml")
 
@@ -33,18 +33,20 @@ class ConfigManager:
         except (yaml.YAMLError, json.JSONDecodeError) as e:
             logger.error(f"Error parsing config file: {e}")
             raise ValueError(f"Error parsing config file: {e}")
+                   
+    def get(self, key_path: str, default=None):
+        """Support nested keys like 'base.separator' or 'artifact_path.train'"""
+        keys = key_path.split(".")
+        value = self.config
 
-    def get(self, key: str, default: Optional[Any] = None) -> Any:
-        """Access nested config values using dot notation."""
-        keys = key.split('.')
-        value = self.config_dict
-
-        for k in keys:
-            if isinstance(value, dict):
-                value = value.get(k, default)
+        for key in keys:
+            if isinstance(value, dict) and key in value:
+                value = value[key]
             else:
-                logger.warning(f"Config key path '{key}' is invalid at '{k}'")
+                logger.warning(f"Config key path '{key_path}' is invalid at '{key}'")
                 return default
 
         logger.debug(f"Retrieved config key '{key}' with value: {value}")
         return value
+
+

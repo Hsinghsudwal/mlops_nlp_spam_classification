@@ -7,8 +7,7 @@ from pipelines.training_pipeline import TrainingPipeline
 
 def main():
 
-    
-    parser = argparse.ArgumentParser(description="Run MLOps Pipeline for Ham/Spam Classification")
+    parser = argparse.ArgumentParser(description="Run Pipeline for Autonomus")
     
     # Storage options (mutually exclusive)
     storage_group = parser.add_mutually_exclusive_group(required=True)
@@ -16,52 +15,35 @@ def main():
     storage_group.add_argument("--cloud", action="store_true", help="Use AWS cloud storage")  
     storage_group.add_argument("--localstack", action="store_true", help="Use LocalStack for testing")
     
-    # Data path
-    parser.add_argument("--data", default="data/SMSSpamData.tsv", help="Path to spam/ham dataset")
-    
-    # Pipeline mode
+    # Data Pipeline mode
+    parser.add_argument("--data", default="data/SMSSpamData.tsv" or None, help="Path to dataset")
     parser.add_argument("--mode",
-                        choices=["training", "serving", "orchestrated"],
-                        default="training",
+                        choices=["training", "serve", "orchestrated"], default="training",
                         help="Pipeline execution mode")
     
-
-    parser.add_argument("--deploy", action="store_true", help="Deploy model after training")
-    parser.add_argument("--serve", action="store_true", help="Start model server")
-    
     args = parser.parse_args()
-    
-    # Validate data path
-    # if not os.path.exists(args.data):
-    #     print(f"Error: Data file not found: {args.data}")
-    #     sys.exit(1)
-    
-    # Determine config file
+
+    # Determine storage mode
     if args.local:
-        config_file = "config/local.yaml"
+        storage_mode = "local"
     elif args.cloud:
-        config_file = "config/cloud.yaml"
+        storage_mode = "cloud"
     elif args.localstack:
-        config_file = "config/localstack.yaml"
+        storage_mode = "localstack"
     else:
         print("Error: Please specify storage mode (--local, --cloud, or --localstack)")
         sys.exit(1)
     
-    # Validate config file
-    if not os.path.exists(config_file):
-        print(f"Error: Configuration file not found: {config_file}")
-        sys.exit(1)
+    # Load and Validate config file
+    config_path = "config/local.yaml"
     
     try:
         if args.mode == "training":
             print("Starting training mode...")
-            
-            # Run training pipeline
-            pipeline = TrainingPipeline(data_path=args.data, config_file=config_file)
+            pipeline = TrainingPipeline(data_path=args.data, config_path=config_path, storage_mode = storage_mode)
             train_results = pipeline.run()
-            
             print("Training pipeline completed successfully!")
-            print(f"Results: {train_results}")
+            print(f"Results: {train_results.keys()}")
             
             # Handle deployment if requested
             if args.deploy:
@@ -73,7 +55,7 @@ def main():
             # TODO: Implement serving logic
             
         elif args.mode == "orchestrated":
-            print("Orchestrated mode not implemented yet.")
+            print("Orchestrated Autonomus System.")
             # TODO: Implement orchestrated pipeline
             # orchestrator = OrchestratingPipeline()
             # orchest_results = orchestrator.run()

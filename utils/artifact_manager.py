@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class ArtifactManager(ABC):
     """Abstract base class for managing artifacts."""
 

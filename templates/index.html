@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ML Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .form-group { margin: 10px 0; }
+    button { padding: 10px 15px; background: #007bff; color: white; border: none; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    pre { background: #f8f9fa; padding: 10px; border-radius: 4px; }
+    .chat-box { border: 1px solid #ddd; padding: 10px; margin: 10px 0; background: #fafafa; }
+  </style>
+  <script>
+    function toggleInputs(model=null) {
+      // if (!mode || mode === 'None') {
+      // mode = document.getElementById("mode").value;
+      // } else {
+      // document.getElementById("mode").value = mode;
+      // }
+
+      const mode = document.getElementById("mode").value;
+      document.getElementById("form").style.display = mode === "dash" ? "block" : "none";
+      document.getElementById("single-form").style.display = mode === "single" ? "block" : "none";
+      document.getElementById("batch-form").style.display = mode === "batch" ? "block" : "none";
+      document.getElementById("history-section").style.display = mode === "history" ? "block" : "none";
+      document.getElementById("monitoring").style.display = mode === "monitoring" ? "block" : "none";
+      document.getElementById("drift").style.display = mode === "drift" ? "block" : "none";
+
+      document.getElementById("mode").value = mode;
+    }
+    function loadHistory() {
+      const mode = document.getElementById("historyMode").value;
+      fetch("/history?mode=" + mode)
+        .then(res => res.text())
+        .then(html => { document.getElementById("historyTable").innerHTML = html })
+        .catch(err => { document.getElementById("historyTable").innerHTML = "Error: " + err });
+    }
+
+    function loadMonitoring() {
+      fetch('/api/monitoring')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('monitoringResult').textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+          document.getElementById('monitoringResult').textContent = 'Error: ' + error;
+        });
+    }
+
+    function loadDrift() {
+      fetch('/api/drift')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('driftResult').textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+          document.getElementById('driftResult').textContent = 'Error: ' + error;
+        });
+    }
+
+    function triggerAuto(){
+      fetch("/trigger_retrain", {method:"POST", headers: {'Content-Type':'application/json'}, body: JSON.stringify({reason:"ui_manual", manual:false})})
+        .then(r=>r.json()).then(j=>alert(JSON.stringify(j)))
+    }
+    function requestApproval(){
+      fetch("/trigger_retrain", {method:"POST", headers: {'Content-Type':'application/json'}, body: JSON.stringify({reason:"ui_request_approval", manual:true})})
+        .then(r=>r.json()).then(j=>alert(JSON.stringify(j)))
+    }
+  </script>
+</head>
+<!-- <body onload="toggleInputs()"> -->
+<body onload="toggleInputs('{{ active_mode}}')">
+  <h1>ML Dashboard</h1>
+
+  <div class="form-group">
+    <label for="mode">Choose Dashboard:</label>
+    <select id="mode" onchange="toggleInputs()">
+      <option value="dash" {% if active_mode=='dash' %}selected{% endif %}>Dashboard</option>
+      <option value="single" {% if active_mode=='single' %}selected{% endif %}>Single Prediction</option>
+      <option value="batch" {% if active_mode=='batch' %}selected{% endif %}>Batch Prediction</option>
+      <option value="history" {% if active_mode=='history' %}selected{% endif %}>Prediction History</option>
+      <option value="monitoring" {% if active_mode=='monitoring' %}selected{% endif %}>Monitoring</option>
+      <option value="drift" {% if active_mode=='drift' %}selected{% endif %}>Data Drift</option>
+</select>
+    </select>
+  </div>
+
+  <hr>
+
+  <!-- Dash -->
+  <div id="form" style="display:none;">
+  <h2>Welcome to the ML Spam Classifier Dashboard</h2>
+  <p>
+    This interactive dashboard demonstrates a machine learning model trained on the 
+    Ham/Spam SMS dataset. The dataset contains thousands of real-world SMS messages 
+    labeled as <em>Ham (real)</em> or <em>Spam (unwanted)</em>. 
+  </p>
+  <p>
+    <ul>
+      <li><strong>Single Prediction</strong> – test one SMS message at a time.</li>
+      <li><strong>Batch Prediction</strong> – upload a CSV file of messages.</li>
+      <li><strong>Prediction History</strong> – explore past predictions.</li>
+      <li><strong>Monitoring</strong> – check system performance in real time.</li>
+      <li><strong>Data Drift</strong> – see if new data is shifting away from the training distribution.</li>
+    </ul>
+  </p>
+  <p>
+    <b>To get stated select the dropdown menu!
+  </p>
+</div>
+
+  <!-- Single Prediction -->
+  <div id="single-form">
+    <h2>Single Text Prediction</h2>
+    <form action="/predict_single" method="post">
+      <div class="form-group">
+        <label for="feature1">Text Input:</label><br>
+        <textarea id="feature1" name="feature1" rows="4" cols="50" required>{{ feature1 or '' }}</textarea>
+      </div>
+      <button type="submit">Predict</button>
+    </form>
+    {% if prediction %}
+
+      <p><strong>Prediction:</strong> {{ prediction }}</p>
+    {% endif %}
+    <!-- <br> -->
+    <!-- <a href="/predictions_csv">Download Predictions CSV</a> -->
+  </div>
+
+  <!-- Batch Prediction -->
+  <div id="batch-form" style="display:none;">
+    <h2>Batch Prediction</h2>
+    <form action="/predict_batch" method="post" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="file">Upload CSV File:</label>
+        <input type="file" id="file" name="file" accept=".csv" required>
+      </div>
+      <button type="submit">Predict Batch</button>
+    </form>
+    {% if batch_result %}
+      <h3>Batch Results</h3>
+      <div>{{ batch_result|safe }}</div>
+    {% endif %}
+  </div>
+
+  <!-- History -->
+  <div id="history-section" style="display:none;">
+    <h2>Prediction History</h2>
+    <label for="historyMode">Show:</label>
+    <select id="historyMode" onchange="loadHistory()">
+      <option value="all">All</option>
+      <option value="single">Single</option>
+      <option value="batch">Batch</option>
+    </select>
+    <button onclick="loadHistory()">Load History</button>
+    <a href="/predictions_csv">Download Full CSV</a>
+    <div id="historyTable"></div>
+  </div>
+
+</body>
+</html>

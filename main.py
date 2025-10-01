@@ -2,19 +2,64 @@ import argparse
 import sys
 import os
 import subprocess
+from utils.artifact_manager import ArtifactManager
+from utils.config_manager import ConfigManager
+from integration.storage import ArtifactStoreFactory
 from pipelines.training_pipeline import TrainingPipeline
 from pipelines.experiment_pipeline import ExperimentPipeline
 from pipelines.deployment_pipeline import DeploymentPipeline
 
 # from pipelines.orchestrating_pipeline import OrchestratingPipeline
-import app
 
 
-def run_ml_cycle(config_path: str, prod: bool = False):
-    pass
+def train_pipeline(config, artifact_manager, data_path, user_input):
+    """Run training + experiment registration. Promotion only affects experiment stage."""
+    training_pipeline = TrainingPipeline(
+        data_path=data_path, config=config, artifact_manager=artifact_manager
+    )
+    train_results = training_pipeline.run()
+    print("Training results keys:", train_results.keys())
+
+    if train_results.get("pipeline_metadata", {}).get("status") == "completed":
+        exp_pipeline = ExperimentPipeline(
+            config=config, artifact_manager=artifact_manager, user_input=user_input
+        )
+        exp_info = exp_pipeline.run(train_results)
+        print("Experiment registered:", exp_info)
+        return exp_info
+
+    return None
+
+
+def deploy_pipeline(config, artifact_manager):
+    """Deploy model based on latest experiment info."""
+    exp_info = artifact_manager.load(subdir="registry", name="latest_experiment.json")
+    if not exp_info:
+        raise ValueError("No experiment found to deploy")
+    deployment_pipeline = DeploymentPipeline(
+        config=config, artifact_manager=artifact_manager
+    )
+    deploy_result = deployment_pipeline.run(exp_info)
+    print("Deployment result:", deploy_result)
+    return deploy_result
+
+
+def serve_pipeline():
+    """Serve model using Streamlit or other server."""
+    print("Starting model serving...")
+    subprocess.run([sys.executable, "app.py"], check=True)
+
+
+def run_orchestrated_pipeline():
+    """Run orchestrated autonomous system."""
+    print("Running orchestrated Autonomus System...")
+    # orchestrator = OrchestratingPipeline()
+    # return orchestrator.run()
+    print("Orchestration not implemented yet.")
+
+
 def main():
-
-    parser = argparse.ArgumentParser(description="Run Pipeline for Autonomus")
+    parser = argparse.ArgumentParser(description="Run Autonomous ML Pipeline")
 
     # Storage options (mutually exclusive)
     storage_group = parser.add_mutually_exclusive_group(required=True)
@@ -28,71 +73,43 @@ def main():
         "--localstack", action="store_true", help="Use LocalStack for testing"
     )
 
-    # Data Pipeline mode
+    # Pipeline mode
     parser.add_argument(
-        "--data", default="data/SMSSpamData.tsv" or None, help="Path to dataset"
+        "--data", default="data/SMSSpamData.tsv", help="Path to dataset"
     )
     parser.add_argument(
-        "--mode",
-        choices=["training", "deploy", "serve", "orchestrated"],
-        default="training",
-        help="Pipeline execution mode",
+        "--mode", choices=["train", "deploy", "serve", "orchestrated"], default="train"
     )
-    
     parser.add_argument(
-        "--prod",
-        choices=["y", "n"],
-        default="n",
-        help="Promote model",
+        "--prod", choices=["y", "n"], default="n", help="Promote model to production?"
     )
 
     args = parser.parse_args()
 
     # Determine storage mode
-    if args.local:
-        storage_mode = "local"
-    elif args.cloud:
-        storage_mode = "cloud"
-    elif args.localstack:
-        storage_mode = "localstack"
-    else:
-        print("Error: Please specify storage mode (--local, --cloud, or --localstack)")
-        sys.exit(1)
+    storage_mode = "local" if args.local else "cloud" if args.cloud else "localstack"
 
-    # Load and Validate config file
-    config_path = "config/local.yaml"
+    # Load config
+    config_path = "config/config.yaml"
+    config = ConfigManager.load_file(config_path)
+    config.set("storage.mode", storage_mode)
+
+    # Artifact manager
+    artifact_manager = ArtifactStoreFactory.create_store(config)
 
     try:
-        if args.mode == "training":
-            print("Starting training mode...")
-            pipeline = TrainingPipeline(
-                data_path=args.data, config_path=config_path, storage_mode=storage_mode
+        if args.mode == "train":
+            train_pipeline(
+                config, artifact_manager, data_path=args.data, user_input=args.prod
             )
-            train_results = pipeline.run()
-            # print("Training pipeline completed successfully!")
-            print(f"Results: {train_results.keys()}")  # train_results.keys()
-            # print(train_results)
-            if train_results["pipeline_metadata"].get("status") == "completed":
-                print("passed")
-                # sys.exit(1)
-                exp_mlflow = ExperimentPipeline(config_path, user_input=args.prod)
-                exp_info = exp_mlflow.run(train_results)
-                print(exp_info)
-
-        # Handle deployment if requested
         elif args.mode == "deploy":
-            DeploymentPipeline(config_path).run()
-            
-
+            deploy_pipeline(config, artifact_manager)
         elif args.mode == "serve":
-            print("Serving model with Streamlit...")
-            subprocess.run(["streamlit", "run", "app.py"], check=True)
-
+            serve_pipeline()
         elif args.mode == "orchestrated":
-            print("Orchestrated Autonomus System.")
-            # TODO: Implement orchestrated pipeline
-            # orchestrator = OrchestratingPipeline()
-            # orchest_results = orchestrator.run()
+            run_orchestrated_pipeline()
+        else:
+            raise ValueError(f"Unknown mode: {args.mode}")
 
     except Exception as e:
         print(f"Pipeline execution failed: {e}")

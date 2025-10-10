@@ -2,6 +2,8 @@ import os
 import numpy as np
 from datetime import datetime
 from typing import Dict, Any, Optional
+import joblib
+import tempfile
 
 import mlflow
 import mlflow.sklearn
@@ -18,9 +20,7 @@ class MLflowTracker:
     """MLflow experiment tracking,registration, and stage/alias."""
 
     def __init__(self, config: str):
-        self.config  = config
-        # self.config = ConfigManager.load_file(config_file)
-        self.artifact_store = ArtifactStoreFactory.create_store(self.config)
+        self.config = config
         self.client: Optional[MlflowClient] = None
         self.experiment_id: Optional[str] = None
         self.tracking_uri: Optional[str] = None
@@ -29,9 +29,8 @@ class MLflowTracker:
         self.run_name: Optional[str] = None
 
     def setup_mlflow(self) -> None:
-        uri = (
-            self.config.get("mlflow_config.remote_server_uri")
-            or self.config.get("mlflow_config.mlflow_tracking_uri")
+        uri = self.config.get("mlflow_config.remote_server_uri") or self.config.get(
+            "mlflow_config.mlflow_tracking_uri"
         )
         if uri:
             mlflow.set_tracking_uri(uri)
@@ -80,6 +79,7 @@ class MLflowTracker:
             "X_test": trainer_data["X_test"],
             "y_test": trainer_data["y_test"],
             "wrapper_pipeline": trainer_data["wrapper_pipeline"],
+            "label_encoder": eval_data["label_encoder"],
             "metrics": eval_data["metrics"],
             "full_pipeline": eval_data["full_pipeline"],
         }
@@ -123,12 +123,28 @@ class MLflowTracker:
 
         logger.info("Metrics logged to MLflow")
 
+    # def log_label_encoder(self, label_encoder) -> None:
+    #     """Log fitted label encoder as MLflow artifact."""
+    #     if label_encoder is None:
+    #         logger.warning("No label encoder found to log")
+    #         return
+
+    #     try:
+    #         with tempfile.TemporaryDirectory() as tmpdir:
+    #             path = os.path.join(tmpdir, "label_encoder.pkl")
+    #             joblib.dump(label_encoder, path)
+    #             mlflow.log_artifact(path, artifact_path="preprocessing")
+    #         logger.info("Label encoder logged to MLflow as artifact")
+    #     except Exception as e:
+    #         logger.error(f"Failed to log label encoder: {e}")
+
     def log_model(self, extracted_data: Dict[str, Any]) -> None:
         """Log trained model to MLflow."""
         # model = extracted_data["best_model"]
         full_pipeline = extracted_data["full_pipeline"]
         model_name = extracted_data["best_model_name"]
         X_test = extracted_data["X_test"]
+        label_encoder = extracted_data.get("label_encoder")
 
         if full_pipeline is None:
             logger.error("No full_pipeline found in extracted_data")
@@ -149,21 +165,18 @@ class MLflowTracker:
                 artifact_path="model",
                 signature=signature,
                 input_example=X_test[:5] if hasattr(X_test, "__getitem__") else None,
-                # input_example=(
-                #     X_test.iloc[:5].toarray()
-                #     if hasattr(X_test, "iloc") and hasattr(X_test.iloc[:5], "toarray")
-                #     else (
-                #         X_test[:5].toarray()
-                #         if hasattr(X_test, "toarray")
-                #         else X_test[:5]
-                #     )
-                ),
-                # registered_model_name=f"{model_name}_model", # if self.auto_register else None,
-                # input_example=(
-                #     X_test.iloc[:5] if hasattr(X_test, "iloc") else X_test[:5]
-                # ),
-            # )
+            ),
+
             logger.info(f"Model {model_name} logged to MLflow")
+
+            # Log label encoder
+            # if label_encoder is not None:
+            #     with tempfile.TemporaryDirectory() as tmpdir:
+            #         path = os.path.join(tmpdir, "label_encoder.pkl")
+            #         joblib.dump(label_encoder, path)
+            #         mlflow.log_artifact(path, artifact_path="preprocessing")
+            #     logger.info("Label encoder logged to MLflow as artifact")
+            # mlflow.log_model_params()
 
             # Register
             registered_name = f"{model_name}_pipeline"
@@ -195,6 +208,7 @@ class MLflowTracker:
             }
         except Exception as e:
             logger.error(f"Failed to register model {registered_name}: {e}")
+            return None
 
     def start_run(self, run_name: Optional[str] = None) -> None:
         """Start MLflow run."""
@@ -226,6 +240,7 @@ class MLflowTracker:
             try:
                 self.log_parameters(extracted_data)
                 self.log_metrics(extracted_data)
+                # self.log_label_encoder(extracted_data["label_encoder"])
                 model_info = self.log_model(extracted_data)
 
                 # registered_model_info = self.register_model(extracted_data)
@@ -233,9 +248,6 @@ class MLflowTracker:
                     "run_id": self.run_id,
                     "run_name": self.run_name,
                     "experiment_id": self.experiment_id,
-                    # "model_name": extracted_data["best_model_name"],
-                    # "accuracy": extracted_data["metrics"].get("accuracy", 0.0),
-                    # "f1_score": extracted_data["metrics"].get("f1_score", 0.0),
                     "model_info": model_info,
                     "tracking_uri": self.tracking_uri,
                 }

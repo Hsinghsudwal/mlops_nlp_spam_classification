@@ -7,250 +7,266 @@ import pandas as pd
 from datetime import datetime
 from mlflow import MlflowClient
 from utils.config_manager import ConfigManager
-
-# ----------------- Paths -----------------
-config = ConfigManager.load_file("config/config.yaml")
-DEPLOYFILE = "outputs/registry/latest_deployment.json"
-LOCALMODEL = "outputs/evaluate/full_pipeline.pkl"
-HISTORY_FILE = "user_app/history/predictions.csv"
-os.makedirs("user_app/history", exist_ok=True)
-os.makedirs("user_app/uploads", exist_ok=True)
+from utils.logger import logger
 
 
-MODEL_CACHE = {}
+class DeployServe:
+    def __init__(self):
+        self.DEPLOYFILE = "outputs/registry/latest_deployment.json"
+        self.LOCALMODEL = "outputs/evaluate/full_pipeline.pkl"
+        self.HISTORY_FILE = "user_app/history/predictions.csv"
+        os.makedirs("user_app/history", exist_ok=True)
+        os.makedirs("user_app/uploads", exist_ok=True)
 
-# def get_mlflow_client():
-#     """Initialize MLflow client from config.yaml."""
-    
-#     tracking_uri = config.get("mlflow_config.remote_server_uri") or config.get("mlflow_config.mlflow_tracking_uri")
-#     if tracking_uri:
-#         mlflow.set_tracking_uri(tracking_uri)
-#         return MlflowClient(tracking_uri=tracking_uri)
-#     return MlflowClient()
+        self.deployment_info = {}
+        self.pipeline = None  # Main model (in-memory)
+        self.prev_pipeline = None  # Previous model for A/B testing
+        self.prev_model_info = None
 
-# def get_experiment():
-#     """Fetch experiment object from config.yaml."""
-    
-#     tracking_uri = config.get("mlflow_config.remote_server_uri") or config.get("mlflow_config.mlflow_tracking_uri")
-#     if tracking_uri:
-#         mlflow.set_tracking_uri(tracking_uri)
-#     experiment_name = config.get("mlflow_config.experiment_name", "default_experiment")
-#     return mlflow.get_experiment_by_name(experiment_name)
-    
+        # Track what's loaded to avoid redundant MLflow calls
+        self.current_run_id = None
 
-# def get_latest_production_model():
-#     if "latest_production_model" in MODEL_CACHE:
-#         print("✅ Loaded model from cache.")
-#         return MODEL_CACHE["latest_production_model"]
-    
-#     try:
-        
-#         client = get_mlflow_client()
-#         exp = get_experiment()
-#         if not exp:
-#             print("Experiment not found in config.")
-#             return None, None, None
-        
-#         exp_id = exp.experiment_id
-        
-#         all_versions = client.search_model_versions("") 
+        self._load_deployment_info()
+        self._load_or_fetch_model()
 
-#         latest_model = None
-#         latest_ts = 0
+    def _load_deployment_info(self):
+        """Load deployment metadata from JSON file."""
+        if not os.path.exists(self.DEPLOYFILE):
+            logger.warning("Deployment file not found, will use local model only.")
+            return
 
-#         for mv in all_versions:
-#             # print(mv)
-#             #check only match
-#             run = client.get_run(mv.run_id)
-#             if run.info.experiment_id != exp_id:
-#                 continue  # skip models
-            
-#             print(f"Checking {mv.name} v{mv.version} (aliases={mv.aliases})")
-#             aliases = mv.aliases or []
-#             deployment_status = mv.tags.get("deployment_status", "inactive") if mv.tags else "inactive"
-
-#             if "production" in aliases and deployment_status == "active":
-#                 ts = int(mv.creation_timestamp)
-#                 if ts > latest_ts:
-#                     latest_ts = ts
-#                     latest_model = mv
-
-#         if not latest_model:
-#             print("No active production model found.")
-#             return None, None, None
-
-#         run_id = latest_model.run_id
-#         model_uri = f"runs:/{run_id}/model"
-#         pipeline = mlflow.sklearn.load_model(model_uri)
-
-#         prev_model = json.loads(latest_model.tags.get("previous_model", "null")) if latest_model.tags else None
-#         deploy_info = {
-#             "model_name": latest_model.name,
-#             "version": latest_model.version,
-#             "run_id": run_id,
-#             "aliases": latest_model.aliases,
-#             "tags": latest_model.tags or {},
-#             "routing_config": json.loads(latest_model.tags.get("routing_target", "{}")) if latest_model.tags else {},
-#             "deployment_status": deployment_status,
-#             "previous_model": prev_model,
-#         }
-
-#         print(f"✅ Loaded production model: {latest_model.name} v{latest_model.version}")
-#         MODEL_CACHE["latest_production_model"] = (pipeline, deploy_info, prev_model)
-#         return pipeline, deploy_info, prev_model
-
-#     except Exception as e:
-#         print(f"⚠️ Error loading production model: {e}")
-#         return None, None, None
-
-
-# local
-def load_from_local():
-    if os.path.exists(LOCALMODEL):
-        with open(LOCALMODEL, "rb") as f:
-            pipeline = pickle.load(f)
-
-        if os.path.exists(DEPLOYFILE):
-            with open(DEPLOYFILE, "r") as f:
-                deploy_info = json.load(f)
-        else:
-            deploy_info = {
-                "status": "local",
-                "data": {
-                    "model_name": "local_pipeline",
-                    "version": "N/A",
-                    "deployment_status": "active",
-                    "routing_config": {"strategy": "direct", "target": "local"},
-                    "previous_model": None,
-                },
-                "message": "Local deployment",
-            }
-        return pipeline, deploy_info, None
-    raise FileNotFoundError(f"No local model at {LOCALMODEL}")
-
-
-def load_deploy_pipeline():
-    # pipeline, deploy_info, prev_model = get_latest_production_model()
-    # if not pipeline:
-    #     print("⚠️ Falling back to local model...")
-    pipeline, deploy_info, prev_model = load_from_local()
-    return pipeline, deploy_info, prev_model
-
-
-# pred
-def predict_text(pipeline, text: str):
-    pred = pipeline.predict([text])[0]
-    encoder = pipeline.named_steps["preprocessor"].label_encoder
-    return encoder.classes_[pred]
-
-
-def log_history(records, mode="single"):
-    """Append new predictions to CSV with mode."""
-    new_df = pd.DataFrame(records)
-    new_df["mode"] = mode
-
-    if os.path.exists(HISTORY_FILE):
-        new_df.to_csv(HISTORY_FILE, mode="a", header=False, index=False)
-    else:
-        new_df.to_csv(HISTORY_FILE, mode="w", header=True, index=False)
-
-def route_prediction(text: str):
-    pipeline, deploy_info, prev_model_info = load_deploy_pipeline()
-    strategy = deploy_info.get("routing_config", {}).get("strategy", "direct")
-    pred = predict_text(pipeline, text)
-
-    if strategy == "shadow" and prev_model_info:
         try:
-            prev_pipeline_uri = f"runs:/{prev_model_info['run_id']}/model"
-            if prev_pipeline_uri not in MODEL_CACHE:
-                MODEL_CACHE[prev_pipeline_uri] = mlflow.sklearn.load_model(prev_pipeline_uri)
-            prev_pipeline = MODEL_CACHE[prev_pipeline_uri]
-            prev_pred = predict_text(prev_pipeline, text)
-        except Exception:
-            pass
-    elif strategy == "canary" and prev_model_info:
-        canary_ratio = deploy_info.get("routing_config", {}).get("canary_ratio", 0.1)
-        if random.random() < canary_ratio:
+            with open(self.DEPLOYFILE, "r") as f:
+                data = json.load(f)
+
+            if "metrics" not in data:
+                raise ValueError("Invalid deployment file: missing 'metrics' section")
+
+            self.deployment_info = data["metrics"]
+            self.prev_model_info = self.deployment_info.get("previous_model")
+
+            logger.info(
+                f"Deployment config loaded: model={self.deployment_info.get('model_name')} "
+                f"version={self.deployment_info.get('version')} "
+                f"strategy={self.deployment_info.get('routing_config', {}).get('strategy', 'direct')}"
+            )
+        except Exception as e:
+            logger.error(f"Failed to load deployment info: {e}")
+            self.deployment_info = {}
+
+    def _load_or_fetch_model(self):
+        """Load model with priority: local pickle → MLflow (if deployment info exists)."""
+
+        # Priority 1: Try local pickle (fastest)
+        if os.path.exists(self.LOCALMODEL):
             try:
-                prev_pipeline_uri = f"runs:/{prev_model_info['run_id']}/model"
-                if prev_pipeline_uri not in MODEL_CACHE:
-                    MODEL_CACHE[prev_pipeline_uri] = mlflow.sklearn.load_model(prev_pipeline_uri)
-                prev_pipeline = MODEL_CACHE[prev_pipeline_uri]
-                pred = predict_text(prev_pipeline, text)
-            except Exception:
-                pass
-    elif strategy == "blue_green" and prev_model_info:
-        if random.random() < 0.5:
-            try:
-                prev_pipeline_uri = f"runs:/{prev_model_info['run_id']}/model"
-                if prev_pipeline_uri not in MODEL_CACHE:
-                    MODEL_CACHE[prev_pipeline_uri] = mlflow.sklearn.load_model(prev_pipeline_uri)
-                prev_pipeline = MODEL_CACHE[prev_pipeline_uri]
-                pred = predict_text(prev_pipeline, text)
-            except Exception:
-                pass
+                with open(self.LOCALMODEL, "rb") as f:
+                    self.pipeline = pickle.load(f)
+                logger.info("Pipeline loaded from local cache")
 
-    log_history([{"input": text, "prediction": pred}], mode="single")
-    return pred
+                # Validate it matches deployment info if available
+                if self.deployment_info:
+                    self.current_run_id = self.deployment_info.get("run_id")
+                return
+            except Exception as e:
+                logger.warning(f"Failed to load local pickle: {e}")
 
-# def route_prediction(text: str):
-#     pipeline, deploy_info, prev_model_info = load_deploy_pipeline()
-#     strategy = deploy_info.get("routing_config", {}).get("strategy", "direct")
-#     pred = predict_text(pipeline, text) 
+        # Priority 2: Load from MLflow if deployment info exists
+        if self.deployment_info:
+            self._load_from_mlflow()
+        else:
+            raise RuntimeError(
+                "No model available: local pickle missing and no deployment info found"
+            )
 
-#     if strategy == "shadow" and prev_model_info:
-#         try:
-#             prev_pipeline_uri = f"runs:/{prev_model_info['run_id']}/model"
-#             prev_pipeline = mlflow.sklearn.load_model(prev_pipeline_uri)
-#             prev_pred = predict_text(prev_pipeline, text)
-#         except Exception:
-#             pass
-#     elif strategy == "canary" and prev_model_info:
-#         canary_ratio = deploy_info.get("routing_config", {}).get("canary_ratio", 0.1)
-#         # if prev_model_info and random.random() >= canary_ratio:
-#         if random.random() < canary_ratio:
-#             try:
-#                 prev_pipeline_uri = f"runs:/{prev_model_info['run_id']}/model"
-#                 prev_pipeline = mlflow.sklearn.load_model(prev_pipeline_uri)
-#                 pred = predict_text(prev_pipeline, text)
-#             except Exception:
-#                 pass
-            
-#     elif strategy == "blue_green" and prev_model_info:
-#         if random.random() < 0.5:
-#             try:
-#                 prev_pipeline_uri = f"runs:/{prev_model_info['run_id']}/model"
-#                 prev_pipeline = mlflow.sklearn.load_model(prev_pipeline_uri)
-#                 pred = predict_text(prev_pipeline, text)
-#             except Exception as e:
-#                 pass
+    def _load_from_mlflow(self):
+        """Fetch pipeline from MLflow registry and cache locally."""
+        run_id = self.deployment_info.get("run_id")
+        model_name = self.deployment_info.get("model_name")
+        version = self.deployment_info.get("version")
 
-#     log_history([{"input": text, "prediction": pred}], mode="single")
-#     return pred
+        if not (run_id and model_name and version):
+            raise ValueError(
+                "Deployment info incomplete: missing run_id, model_name, or version"
+            )
+
+        # if already loaded
+        if self.current_run_id == run_id and self.pipeline is not None:
+            logger.info("Model already loaded in memory, skipping MLflow fetch")
+            return
+
+        model_uri = f"models:/{model_name}/{version}"
+        logger.info(f"Fetching model from MLflow: {model_uri} (this may take time...)")
+
+        try:
+            self.pipeline = mlflow.sklearn.load_model(model_uri)
+            self.current_run_id = run_id
+
+            # Cache load
+            with open(self.LOCALMODEL, "wb") as f:
+                pickle.dump(self.pipeline, f)
+            logger.info("✓ Pipeline fetched and cached locally")
+        except Exception as e:
+            logger.error(f"Failed to load from MLflow: {e}")
+            raise
+
+    def _load_previous_model(self):
+        """Load previous model from MLflow (lazy loading, only when needed)."""
+        if not self.prev_model_info:
+            return None
+
+        # Already loaded
+        if self.prev_pipeline is not None:
+            return self.prev_pipeline
+
+        prev_run_id = self.prev_model_info.get("run_id")
+        prev_uri = f"runs:/{prev_run_id}/model"
+
+        try:
+            logger.info(
+                f"Loading previous model for {self.deployment_info.get('routing_config', {}).get('strategy')} routing..."
+            )
+            self.prev_pipeline = mlflow.sklearn.load_model(prev_uri)
+            logger.info(f"✓ Previous model loaded: {prev_uri}")
+        except Exception as e:
+            logger.error(f"Failed to load previous model: {e}")
+            return None
+
+        return self.prev_pipeline
+
+    def _predict_text(self, pipeline, text: str):
+        """Run prediction on single text input."""
+        pred = pipeline.predict([text])[0]
+        encoder = pipeline.named_steps["preprocessor"].label_encoder
+        return encoder.classes_[pred]
+
+    
+    def single_predict(self, text: str):
+        """Route prediction according to deployment strategy."""
+        if self.pipeline is None:
+            raise RuntimeError("No model loaded. Check deployment setup.")
+
+        strategy = self.deployment_info.get("routing_config", {}).get(
+            "strategy", "direct"
+        )
+        routing_config = self.deployment_info.get("routing_config", {})
+
+        # Default: use current model
+        pred = self._predict_text(self.pipeline, text)
+        model_used = "current"
+
+        # --- Strategy Routing ---
+        if strategy in ["shadow", "canary", "blue_green"] and self.prev_model_info:
+            prev_pipeline = self._load_previous_model()
+
+            if prev_pipeline:
+                if strategy == "shadow":
+                    # Shadow mode: always use new, log old prediction silently
+                    shadow_pred = self._predict_text(prev_pipeline, text)
+                    logger.debug(f"Shadow prediction (not used): {shadow_pred}")
+
+                elif strategy == "canary":
+                    # Canary: route X% to old model
+                    canary_ratio = routing_config.get("canary_ratio", 0.1)
+                    if random.random() < canary_ratio:
+                        pred = self._predict_text(prev_pipeline, text)
+                        model_used = "previous"
+                        logger.debug(f"Canary routing: using previous model")
 
 
-def batch_prediction(file_path: str):
-    pipeline, _, _ = load_deploy_pipeline()
-    df = pd.read_csv(file_path)
+        self.log_history(
+            [{"input": text, "prediction": pred, "model_used": model_used}],
+            mode="single",
+        )
 
-    if "text" not in df.columns:
-        raise ValueError("CSV must have a 'text' column")
+        return pred
 
-    preds = pipeline.predict(df["text"].tolist())
-    encoder = pipeline.named_steps["preprocessor"].label_encoder
-    df["prediction"] = [encoder.classes_[p] for p in preds]
+    def batch_predict(self, file_path: str):
+        """Run batch predictions from CSV file."""
+        if self.pipeline is None:
+            raise RuntimeError("No model loaded. Check deployment setup.")
 
-    log_history(
-        df[["text", "prediction"]].rename(columns={"text": "input"}).to_dict(orient="records"),
-        mode="batch"
-    )
-    return df
+        df = pd.read_csv(file_path)
+        if "text" not in df.columns:
+            raise ValueError("CSV must have a 'text' column")
+
+        logger.info(f"Running batch prediction on {len(df)} samples...")
+
+        # Batch prediction
+        preds = self.pipeline.predict(df["text"].tolist())
+        encoder = self.pipeline.named_steps["preprocessor"].label_encoder
+        df["prediction"] = [encoder.classes_[p] for p in preds]
+
+   
+        records = []
+        for idx, row in df.iterrows():
+            records.append({
+                "input": row["text"],
+                "prediction": row["prediction"],
+                "model_used": "current"
+            })
 
 
-def get_history(mode=None):
-    if os.path.exists(HISTORY_FILE):
-        df = pd.read_csv(HISTORY_FILE)
-        if mode in ["single", "batch"]:
-            df = df[df["mode"] == mode]
+        self.log_history(records, mode="batch")
+
+        logger.info(f"Batch prediction completed")
         return df
-    return pd.DataFrame(columns=["input", "prediction", "mode"])
+    def log_history(self, records: list, mode: str = "single"):
+        """Append predictions to history CSV with fixed 7 columns."""
+        if not records:
+            return
+
+        columns = ["input", "prediction", "model_used", "mode", "timestamp", "model_version", "strategy"]
+
+        for record in records:
+            record.setdefault("input", "")
+            record.setdefault("prediction", "")
+            record.setdefault("model_used", "current")
+            record.setdefault("mode", mode)
+            record["timestamp"] = datetime.now().isoformat()
+            record["model_version"] = self.deployment_info.get("version", "local")
+            record["strategy"] = self.deployment_info.get("routing_config", {}).get("strategy", "direct")
+
+        new_df = pd.DataFrame(records)[columns]  
+        if os.path.exists(self.HISTORY_FILE):
+            try:
+                old_df = pd.read_csv(self.HISTORY_FILE)
+                if list(old_df.columns) != columns:
+                    logger.warning("Old history CSV has wrong columns. Overwriting with correct columns.")
+                    new_df.to_csv(self.HISTORY_FILE, mode="w", header=True, index=False)
+                else:
+                    new_df.to_csv(self.HISTORY_FILE, mode="a", header=False, index=False)
+            except Exception as e:
+                logger.error(f"Failed to append history, overwriting file: {e}")
+                new_df.to_csv(self.HISTORY_FILE, mode="w", header=True, index=False)
+        else:
+            new_df.to_csv(self.HISTORY_FILE, mode="w", header=True, index=False)
+
+        logger.info(f"✓ Logged {len(records)} records to history ({mode} mode)")
+
+
+    def get_history(self, mode: str = None, limit: int = 100):
+      
+        columns = ["input", "prediction", "model_used", "mode", "timestamp", "model_version", "strategy"]
+
+        if not os.path.exists(self.HISTORY_FILE):
+            return pd.DataFrame(columns=columns)
+
+        try:
+            df = pd.read_csv(self.HISTORY_FILE)
+
+            for col in columns:
+                if col not in df.columns:
+                    df[col] = None
+
+            if mode in ["single", "batch"]:
+                df = df[df["mode"] == mode]
+
+            df = df.drop_duplicates(subset=["input", "timestamp"], keep="last")
+            df = df.sort_values("timestamp", ascending=False).head(limit)
+
+            return df[columns]
+
+        except Exception as e:
+            logger.error(f"Failed to read history, returning empty DataFrame: {e}")
+            return pd.DataFrame(columns=columns)

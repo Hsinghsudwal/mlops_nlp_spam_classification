@@ -14,15 +14,15 @@ class DeploymentPipeline:
     def run(self, exp_info):
         """Run the deployment pipeline."""
         logger.info("=== Starting Deployment====")
-        deploy = DeploymentManager(self.config)
-        result = deploy.deployment_manager(exp_info)
+        deployment = DeploymentManager(self.config)
+        result = deployment.deploy(exp_info)
         # print(result)
-        
+
         self.artifact_manager.save(
             artifact=result.__dict__,
             subdir="registry",
             name="latest_deployment.json",
-            pipeline_id= str(uuid.uuid4()),
+            pipeline_id=str(uuid.uuid4()),
         )
         logger.info("Deployment completed")
         return {

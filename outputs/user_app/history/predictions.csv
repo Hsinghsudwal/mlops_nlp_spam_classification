@@ -1,0 +1,289 @@
+input,prediction,model_used,mode,timestamp,model_version,strategy
+test the file,ham,current,single,2025-10-25T21:59:55.566619,11,direct
+"testing
+",ham,current,single,2025-10-25T22:13:12.365493,11,direct
+"testing
+",ham,current,single,2025-10-25T22:13:16.523179,11,direct
+csfv,ham,current,single,2025-10-25T22:19:12.068596,11,direct
+csfv,ham,current,single,2025-10-25T22:24:54.430629,11,direct
+the test file,ham,current,single,2025-10-25T22:25:08.232975,11,direct
+the test file,ham,current,single,2025-10-25T22:25:30.308883,11,direct
+csfv,ham,current,single,2025-10-25T22:40:06.097471,11,direct
+sd,ham,current,single,2025-10-25T22:40:26.512579,11,direct
+csfv,ham,current,single,2025-10-25T22:40:59.310557,11,direct
+Free entry in 2 a wkly comp to win FA Cup final tkts 21st May 2005.,spam,current,batch,2025-10-25T22:41:14.889176,11,direct
+U dun say so early hor... U c already then say...,ham,current,batch,2025-10-25T22:41:14.889192,11,direct
+"Nah I don't think he goes to usf, he lives around here though",ham,current,batch,2025-10-25T22:41:14.889196,11,direct
+WINNER!! As a valued network customer you have been selected to receivea £900 prize reward!,spam,current,batch,2025-10-25T22:41:14.889201,11,direct
+Had your mobile 11 months or more? U R entitled to Update to the latest colour mobiles with camera for Free!,spam,current,batch,2025-10-25T22:41:14.889205,11,direct
+I'm gonna be home soon and i don't want to talk about this stuff anymore tonight,ham,current,batch,2025-10-25T22:41:14.889208,11,direct
+"SIX chances to win CASH! From 100 to 20,000 pounds txt> CSH11 and send to 87575.",spam,current,batch,2025-10-25T22:41:14.889212,11,direct
+"URGENT! You have won a 1 week FREE membership in our £100,000 Prize Jackpot!",spam,current,batch,2025-10-25T22:41:14.889216,11,direct
+I've been searching for the right words to thank you for this breather. I promise i won't take your help for granted and will fulfill my promise. You have been wonderful and a blessing at all times.,ham,current,batch,2025-10-25T22:41:14.889219,11,direct
+As per your request 'Melle Melle (Oru Minnaminunginte Nurungu Vettam)' has been set as your caller tune for all Callers.,ham,current,batch,2025-10-25T22:41:14.889222,11,direct
+You have won 1 kg of gold! Txt 'GOLD' to 87066. Claim your prize.,spam,current,batch,2025-10-25T22:41:14.889226,11,direct
+Hey there! Are we still meeting up later?,ham,current,batch,2025-10-25T22:41:14.889229,11,direct
+Congratulations! You've won a $1000 Walmart gift card. Go to http://bit.ly/12345 to claim now.,spam,current,batch,2025-10-25T22:41:14.889233,11,direct
+"Hello, are you free this weekend to catch up?",ham,current,batch,2025-10-25T22:41:14.889236,11,direct
+Reminder: You have an appointment tomorrow at 10am.,ham,current,batch,2025-10-25T22:41:14.889239,11,direct
+Get your Free ringtone now by texting 'RING' to 8007!,spam,current,batch,2025-10-25T22:41:14.889242,11,direct
+"I'll call you later, got to go now.",ham,current,batch,2025-10-25T22:41:14.889246,11,direct
+URGENT! Your Mobile No 1234 was awarded a £2000 Bonus Caller Prize.,spam,current,batch,2025-10-25T22:41:14.889249,11,direct
+Can you pick up some groceries on your way home?,ham,current,batch,2025-10-25T22:41:14.889252,11,direct
+FreeMsg: Txt: CALL to No: 86888 & claim your free entry!,spam,current,batch,2025-10-25T22:41:14.889255,11,direct
+Where are you? Call me when you get this.,ham,current,batch,2025-10-25T22:41:14.889258,11,direct
+You have won a guaranteed £1000 cash or a £2000 prize!,spam,current,batch,2025-10-25T22:41:14.889261,11,direct
+"Hey, do you want to grab lunch today?",ham,current,batch,2025-10-25T22:41:14.889264,11,direct
+You have been specially selected to receive a £500 prize!,spam,current,batch,2025-10-25T22:41:14.889268,11,direct
+Call me when you arrive at the station.,ham,current,batch,2025-10-25T22:41:14.889271,11,direct
+Get a free subscription to our content by texting 'SUB' to 12345,spam,current,batch,2025-10-25T22:41:14.889274,11,direct
+"Hi, just checking if you got my last message.",ham,current,batch,2025-10-25T22:41:14.889277,11,direct
+Congratulations! You have won tickets to the Bahamas!,ham,current,batch,2025-10-25T22:41:14.889280,11,direct
+Are you coming to the party tonight?,ham,current,batch,2025-10-25T22:41:14.889284,11,direct
+Winner! As a valued user you have won a £100 voucher.,spam,current,batch,2025-10-25T22:41:14.889287,11,direct
+I'll be there in 10 minutes.,ham,current,batch,2025-10-25T22:41:14.889290,11,direct
+Claim your free prize by visiting http://freestuff.com,spam,current,batch,2025-10-25T22:41:14.889293,11,direct
+Don't forget to bring your documents tomorrow.,ham,current,batch,2025-10-25T22:41:14.889296,11,direct
+You have won $500 cash! Reply 'YES' to claim.,spam,current,batch,2025-10-25T22:41:14.889299,11,direct
+Let's meet at 5pm in front of the cafe.,ham,current,batch,2025-10-25T22:41:14.889303,11,direct
+Free entry to a £1000 cash competition! Reply now!,spam,current,batch,2025-10-25T22:41:14.889306,11,direct
+Are you ready for the meeting later?,ham,current,batch,2025-10-25T22:41:14.889310,11,direct
+You have a chance to win a brand new car! Text 'CAR' to 55555.,ham,current,batch,2025-10-25T22:41:14.889313,11,direct
+Can you send me the files by tonight?,ham,current,batch,2025-10-25T22:41:14.889316,11,direct
+Congratulations! You've won a free shopping voucher!,spam,current,batch,2025-10-25T22:41:14.889319,11,direct
+Please call me when you get a chance.,ham,current,batch,2025-10-25T22:41:14.889323,11,direct
+Exclusive offer! Get a free trial by texting 'FREE' to 8008.,ham,current,batch,2025-10-25T22:41:14.889326,11,direct
+"Hey, how have you been?",ham,current,batch,2025-10-25T22:41:14.889329,11,direct
+You have won a free holiday! Claim now!,spam,current,batch,2025-10-25T22:41:14.889332,11,direct
+Let's catch up this weekend.,ham,current,batch,2025-10-25T22:41:14.889335,11,direct
+WIN a £1000 prize! Text 'WIN' to 80086.,spam,current,batch,2025-10-25T22:41:14.889339,11,direct
+Are you coming to the office tomorrow?,ham,current,batch,2025-10-25T22:41:14.889342,11,direct
+You are selected for a free gift! Reply 'GIFT' to 12345.,spam,current,batch,2025-10-25T22:41:14.889345,11,direct
+Meeting postponed to 3pm.,ham,current,batch,2025-10-25T22:41:14.889348,11,direct
+You've been chosen for a free subscription!,spam,current,batch,2025-10-25T22:41:14.889351,11,direct
+Can we reschedule our meeting?,ham,current,batch,2025-10-25T22:41:14.889354,11,direct
+Claim your free cash prize now by texting 'CASH' to 5005.,spam,current,batch,2025-10-25T22:41:14.889357,11,direct
+csfv,ham,current,single,2025-10-25T22:41:19.836180,11,direct
+testing the ham,ham,current,single,2025-10-26T11:51:32.120256,11,direct
+@#CALL!!! to win Prize,spam,current,single,2025-10-26T11:52:04.344907,11,direct
+Free entry in 2 a wkly comp to win FA Cup final tkts 21st May 2005.,spam,current,batch,2025-10-26T11:52:18.691228,11,direct
+U dun say so early hor... U c already then say...,ham,current,batch,2025-10-26T11:52:18.691251,11,direct
+"Nah I don't think he goes to usf, he lives around here though",ham,current,batch,2025-10-26T11:52:18.691257,11,direct
+WINNER!! As a valued network customer you have been selected to receivea £900 prize reward!,spam,current,batch,2025-10-26T11:52:18.691261,11,direct
+Had your mobile 11 months or more? U R entitled to Update to the latest colour mobiles with camera for Free!,spam,current,batch,2025-10-26T11:52:18.691265,11,direct
+I'm gonna be home soon and i don't want to talk about this stuff anymore tonight,ham,current,batch,2025-10-26T11:52:18.691269,11,direct
+"SIX chances to win CASH! From 100 to 20,000 pounds txt> CSH11 and send to 87575.",spam,current,batch,2025-10-26T11:52:18.691273,11,direct
+"URGENT! You have won a 1 week FREE membership in our £100,000 Prize Jackpot!",spam,current,batch,2025-10-26T11:52:18.691276,11,direct
+I've been searching for the right words to thank you for this breather. I promise i won't take your help for granted and will fulfill my promise. You have been wonderful and a blessing at all times.,ham,current,batch,2025-10-26T11:52:18.691280,11,direct
+As per your request 'Melle Melle (Oru Minnaminunginte Nurungu Vettam)' has been set as your caller tune for all Callers.,ham,current,batch,2025-10-26T11:52:18.691284,11,direct
+You have won 1 kg of gold! Txt 'GOLD' to 87066. Claim your prize.,spam,current,batch,2025-10-26T11:52:18.691287,11,direct
+Hey there! Are we still meeting up later?,ham,current,batch,2025-10-26T11:52:18.691291,11,direct
+Congratulations! You've won a $1000 Walmart gift card. Go to http://bit.ly/12345 to claim now.,spam,current,batch,2025-10-26T11:52:18.691294,11,direct
+"Hello, are you free this weekend to catch up?",ham,current,batch,2025-10-26T11:52:18.691298,11,direct
+Reminder: You have an appointment tomorrow at 10am.,ham,current,batch,2025-10-26T11:52:18.691301,11,direct
+Get your Free ringtone now by texting 'RING' to 8007!,spam,current,batch,2025-10-26T11:52:18.691304,11,direct
+"I'll call you later, got to go now.",ham,current,batch,2025-10-26T11:52:18.691308,11,direct
+URGENT! Your Mobile No 1234 was awarded a £2000 Bonus Caller Prize.,spam,current,batch,2025-10-26T11:52:18.691311,11,direct
+Can you pick up some groceries on your way home?,ham,current,batch,2025-10-26T11:52:18.691314,11,direct
+FreeMsg: Txt: CALL to No: 86888 & claim your free entry!,spam,current,batch,2025-10-26T11:52:18.691317,11,direct
+Where are you? Call me when you get this.,ham,current,batch,2025-10-26T11:52:18.691321,11,direct
+You have won a guaranteed £1000 cash or a £2000 prize!,spam,current,batch,2025-10-26T11:52:18.691324,11,direct
+"Hey, do you want to grab lunch today?",ham,current,batch,2025-10-26T11:52:18.691328,11,direct
+You have been specially selected to receive a £500 prize!,spam,current,batch,2025-10-26T11:52:18.691331,11,direct
+Call me when you arrive at the station.,ham,current,batch,2025-10-26T11:52:18.691334,11,direct
+Get a free subscription to our content by texting 'SUB' to 12345,spam,current,batch,2025-10-26T11:52:18.691337,11,direct
+"Hi, just checking if you got my last message.",ham,current,batch,2025-10-26T11:52:18.691361,11,direct
+Congratulations! You have won tickets to the Bahamas!,ham,current,batch,2025-10-26T11:52:18.691366,11,direct
+Are you coming to the party tonight?,ham,current,batch,2025-10-26T11:52:18.691370,11,direct
+Winner! As a valued user you have won a £100 voucher.,spam,current,batch,2025-10-26T11:52:18.691374,11,direct
+I'll be there in 10 minutes.,ham,current,batch,2025-10-26T11:52:18.691378,11,direct
+Claim your free prize by visiting http://freestuff.com,spam,current,batch,2025-10-26T11:52:18.691381,11,direct
+Don't forget to bring your documents tomorrow.,ham,current,batch,2025-10-26T11:52:18.691384,11,direct
+You have won $500 cash! Reply 'YES' to claim.,spam,current,batch,2025-10-26T11:52:18.691388,11,direct
+Let's meet at 5pm in front of the cafe.,ham,current,batch,2025-10-26T11:52:18.691391,11,direct
+Free entry to a £1000 cash competition! Reply now!,spam,current,batch,2025-10-26T11:52:18.691395,11,direct
+Are you ready for the meeting later?,ham,current,batch,2025-10-26T11:52:18.691398,11,direct
+You have a chance to win a brand new car! Text 'CAR' to 55555.,ham,current,batch,2025-10-26T11:52:18.691401,11,direct
+Can you send me the files by tonight?,ham,current,batch,2025-10-26T11:52:18.691404,11,direct
+Congratulations! You've won a free shopping voucher!,spam,current,batch,2025-10-26T11:52:18.691408,11,direct
+Please call me when you get a chance.,ham,current,batch,2025-10-26T11:52:18.691411,11,direct
+Exclusive offer! Get a free trial by texting 'FREE' to 8008.,ham,current,batch,2025-10-26T11:52:18.691414,11,direct
+"Hey, how have you been?",ham,current,batch,2025-10-26T11:52:18.691418,11,direct
+You have won a free holiday! Claim now!,spam,current,batch,2025-10-26T11:52:18.691421,11,direct
+Let's catch up this weekend.,ham,current,batch,2025-10-26T11:52:18.691424,11,direct
+WIN a £1000 prize! Text 'WIN' to 80086.,spam,current,batch,2025-10-26T11:52:18.691427,11,direct
+Are you coming to the office tomorrow?,ham,current,batch,2025-10-26T11:52:18.691430,11,direct
+You are selected for a free gift! Reply 'GIFT' to 12345.,spam,current,batch,2025-10-26T11:52:18.691434,11,direct
+Meeting postponed to 3pm.,ham,current,batch,2025-10-26T11:52:18.691437,11,direct
+You've been chosen for a free subscription!,spam,current,batch,2025-10-26T11:52:18.691440,11,direct
+Can we reschedule our meeting?,ham,current,batch,2025-10-26T11:52:18.691443,11,direct
+Claim your free cash prize now by texting 'CASH' to 5005.,spam,current,batch,2025-10-26T11:52:18.691446,11,direct
+"I call you later, don't have network. If urgnt, sms me.",ham,current,single,2025-10-26T12:07:12.353239,11,direct
+Free entry in 2 a wkly comp to win FA Cup final tkts 21st May 2005.,spam,current,batch,2025-10-26T12:07:25.700473,11,direct
+U dun say so early hor... U c already then say...,ham,current,batch,2025-10-26T12:07:25.700504,11,direct
+"Nah I don't think he goes to usf, he lives around here though",ham,current,batch,2025-10-26T12:07:25.700512,11,direct
+WINNER!! As a valued network customer you have been selected to receivea £900 prize reward!,spam,current,batch,2025-10-26T12:07:25.700519,11,direct
+Had your mobile 11 months or more? U R entitled to Update to the latest colour mobiles with camera for Free!,spam,current,batch,2025-10-26T12:07:25.700525,11,direct
+I'm gonna be home soon and i don't want to talk about this stuff anymore tonight,ham,current,batch,2025-10-26T12:07:25.700532,11,direct
+"SIX chances to win CASH! From 100 to 20,000 pounds txt> CSH11 and send to 87575.",spam,current,batch,2025-10-26T12:07:25.700539,11,direct
+"URGENT! You have won a 1 week FREE membership in our £100,000 Prize Jackpot!",spam,current,batch,2025-10-26T12:07:25.700545,11,direct
+I've been searching for the right words to thank you for this breather. I promise i won't take your help for granted and will fulfill my promise. You have been wonderful and a blessing at all times.,ham,current,batch,2025-10-26T12:07:25.700550,11,direct
+As per your request 'Melle Melle (Oru Minnaminunginte Nurungu Vettam)' has been set as your caller tune for all Callers.,ham,current,batch,2025-10-26T12:07:25.700556,11,direct
+You have won 1 kg of gold! Txt 'GOLD' to 87066. Claim your prize.,spam,current,batch,2025-10-26T12:07:25.700562,11,direct
+Hey there! Are we still meeting up later?,ham,current,batch,2025-10-26T12:07:25.700568,11,direct
+Congratulations! You've won a $1000 Walmart gift card. Go to http://bit.ly/12345 to claim now.,spam,current,batch,2025-10-26T12:07:25.700573,11,direct
+"Hello, are you free this weekend to catch up?",ham,current,batch,2025-10-26T12:07:25.700579,11,direct
+Reminder: You have an appointment tomorrow at 10am.,ham,current,batch,2025-10-26T12:07:25.700585,11,direct
+Get your Free ringtone now by texting 'RING' to 8007!,spam,current,batch,2025-10-26T12:07:25.700590,11,direct
+"I'll call you later, got to go now.",ham,current,batch,2025-10-26T12:07:25.700596,11,direct
+URGENT! Your Mobile No 1234 was awarded a £2000 Bonus Caller Prize.,spam,current,batch,2025-10-26T12:07:25.700601,11,direct
+Can you pick up some groceries on your way home?,ham,current,batch,2025-10-26T12:07:25.700607,11,direct
+FreeMsg: Txt: CALL to No: 86888 & claim your free entry!,spam,current,batch,2025-10-26T12:07:25.700613,11,direct
+Where are you? Call me when you get this.,ham,current,batch,2025-10-26T12:07:25.700618,11,direct
+You have won a guaranteed £1000 cash or a £2000 prize!,spam,current,batch,2025-10-26T12:07:25.700623,11,direct
+"Hey, do you want to grab lunch today?",ham,current,batch,2025-10-26T12:07:25.700628,11,direct
+You have been specially selected to receive a £500 prize!,spam,current,batch,2025-10-26T12:07:25.700634,11,direct
+Call me when you arrive at the station.,ham,current,batch,2025-10-26T12:07:25.700639,11,direct
+Get a free subscription to our content by texting 'SUB' to 12345,spam,current,batch,2025-10-26T12:07:25.700644,11,direct
+"Hi, just checking if you got my last message.",ham,current,batch,2025-10-26T12:07:25.700651,11,direct
+Congratulations! You have won tickets to the Bahamas!,ham,current,batch,2025-10-26T12:07:25.700656,11,direct
+Are you coming to the party tonight?,ham,current,batch,2025-10-26T12:07:25.700661,11,direct
+Winner! As a valued user you have won a £100 voucher.,spam,current,batch,2025-10-26T12:07:25.700667,11,direct
+I'll be there in 10 minutes.,ham,current,batch,2025-10-26T12:07:25.700672,11,direct
+Claim your free prize by visiting http://freestuff.com,spam,current,batch,2025-10-26T12:07:25.700678,11,direct
+Don't forget to bring your documents tomorrow.,ham,current,batch,2025-10-26T12:07:25.700683,11,direct
+You have won $500 cash! Reply 'YES' to claim.,spam,current,batch,2025-10-26T12:07:25.700689,11,direct
+Let's meet at 5pm in front of the cafe.,ham,current,batch,2025-10-26T12:07:25.700694,11,direct
+Free entry to a £1000 cash competition! Reply now!,spam,current,batch,2025-10-26T12:07:25.700699,11,direct
+Are you ready for the meeting later?,ham,current,batch,2025-10-26T12:07:25.700705,11,direct
+You have a chance to win a brand new car! Text 'CAR' to 55555.,ham,current,batch,2025-10-26T12:07:25.700711,11,direct
+Can you send me the files by tonight?,ham,current,batch,2025-10-26T12:07:25.700716,11,direct
+Congratulations! You've won a free shopping voucher!,spam,current,batch,2025-10-26T12:07:25.700721,11,direct
+Please call me when you get a chance.,ham,current,batch,2025-10-26T12:07:25.700726,11,direct
+Exclusive offer! Get a free trial by texting 'FREE' to 8008.,ham,current,batch,2025-10-26T12:07:25.700731,11,direct
+"Hey, how have you been?",ham,current,batch,2025-10-26T12:07:25.700736,11,direct
+You have won a free holiday! Claim now!,spam,current,batch,2025-10-26T12:07:25.700742,11,direct
+Let's catch up this weekend.,ham,current,batch,2025-10-26T12:07:25.700747,11,direct
+WIN a £1000 prize! Text 'WIN' to 80086.,spam,current,batch,2025-10-26T12:07:25.700753,11,direct
+Are you coming to the office tomorrow?,ham,current,batch,2025-10-26T12:07:25.700757,11,direct
+You are selected for a free gift! Reply 'GIFT' to 12345.,spam,current,batch,2025-10-26T12:07:25.700762,11,direct
+Meeting postponed to 3pm.,ham,current,batch,2025-10-26T12:07:25.700768,11,direct
+You've been chosen for a free subscription!,spam,current,batch,2025-10-26T12:07:25.700773,11,direct
+Can we reschedule our meeting?,ham,current,batch,2025-10-26T12:07:25.700778,11,direct
+Claim your free cash prize now by texting 'CASH' to 5005.,spam,current,batch,2025-10-26T12:07:25.700782,11,direct
+zxz,ham,current,single,2025-10-26T12:23:15.859679,11,direct
+zxz,ham,current,single,2025-10-26T12:23:20.039336,11,direct
+zxz,ham,current,single,2025-10-26T12:23:30.605523,11,direct
+zxz,ham,current,single,2025-10-26T12:23:47.116497,11,direct
+zxz,ham,current,single,2025-10-26T12:26:50.544142,11,direct
+zxz,ham,current,single,2025-10-26T12:26:55.527406,11,direct
+Free entry in 2 a wkly comp to win FA Cup final tkts 21st May 2005.,spam,current,batch,2025-10-26T12:27:04.250315,11,direct
+U dun say so early hor... U c already then say...,ham,current,batch,2025-10-26T12:27:04.250335,11,direct
+"Nah I don't think he goes to usf, he lives around here though",ham,current,batch,2025-10-26T12:27:04.250342,11,direct
+WINNER!! As a valued network customer you have been selected to receivea £900 prize reward!,spam,current,batch,2025-10-26T12:27:04.250349,11,direct
+Had your mobile 11 months or more? U R entitled to Update to the latest colour mobiles with camera for Free!,spam,current,batch,2025-10-26T12:27:04.250355,11,direct
+I'm gonna be home soon and i don't want to talk about this stuff anymore tonight,ham,current,batch,2025-10-26T12:27:04.250361,11,direct
+"SIX chances to win CASH! From 100 to 20,000 pounds txt> CSH11 and send to 87575.",spam,current,batch,2025-10-26T12:27:04.250367,11,direct
+"URGENT! You have won a 1 week FREE membership in our £100,000 Prize Jackpot!",spam,current,batch,2025-10-26T12:27:04.250372,11,direct
+I've been searching for the right words to thank you for this breather. I promise i won't take your help for granted and will fulfill my promise. You have been wonderful and a blessing at all times.,ham,current,batch,2025-10-26T12:27:04.250378,11,direct
+As per your request 'Melle Melle (Oru Minnaminunginte Nurungu Vettam)' has been set as your caller tune for all Callers.,ham,current,batch,2025-10-26T12:27:04.250383,11,direct
+You have won 1 kg of gold! Txt 'GOLD' to 87066. Claim your prize.,spam,current,batch,2025-10-26T12:27:04.250388,11,direct
+Hey there! Are we still meeting up later?,ham,current,batch,2025-10-26T12:27:04.250394,11,direct
+Congratulations! You've won a $1000 Walmart gift card. Go to http://bit.ly/12345 to claim now.,spam,current,batch,2025-10-26T12:27:04.250400,11,direct
+"Hello, are you free this weekend to catch up?",ham,current,batch,2025-10-26T12:27:04.250405,11,direct
+Reminder: You have an appointment tomorrow at 10am.,ham,current,batch,2025-10-26T12:27:04.250411,11,direct
+Get your Free ringtone now by texting 'RING' to 8007!,spam,current,batch,2025-10-26T12:27:04.250417,11,direct
+"I'll call you later, got to go now.",ham,current,batch,2025-10-26T12:27:04.250422,11,direct
+URGENT! Your Mobile No 1234 was awarded a £2000 Bonus Caller Prize.,spam,current,batch,2025-10-26T12:27:04.250427,11,direct
+Can you pick up some groceries on your way home?,ham,current,batch,2025-10-26T12:27:04.250433,11,direct
+FreeMsg: Txt: CALL to No: 86888 & claim your free entry!,spam,current,batch,2025-10-26T12:27:04.250438,11,direct
+Where are you? Call me when you get this.,ham,current,batch,2025-10-26T12:27:04.250443,11,direct
+You have won a guaranteed £1000 cash or a £2000 prize!,spam,current,batch,2025-10-26T12:27:04.250448,11,direct
+"Hey, do you want to grab lunch today?",ham,current,batch,2025-10-26T12:27:04.250454,11,direct
+You have been specially selected to receive a £500 prize!,spam,current,batch,2025-10-26T12:27:04.250459,11,direct
+Call me when you arrive at the station.,ham,current,batch,2025-10-26T12:27:04.250464,11,direct
+Get a free subscription to our content by texting 'SUB' to 12345,spam,current,batch,2025-10-26T12:27:04.250470,11,direct
+"Hi, just checking if you got my last message.",ham,current,batch,2025-10-26T12:27:04.250476,11,direct
+Congratulations! You have won tickets to the Bahamas!,ham,current,batch,2025-10-26T12:27:04.250509,11,direct
+Are you coming to the party tonight?,ham,current,batch,2025-10-26T12:27:04.250516,11,direct
+Winner! As a valued user you have won a £100 voucher.,spam,current,batch,2025-10-26T12:27:04.250521,11,direct
+I'll be there in 10 minutes.,ham,current,batch,2025-10-26T12:27:04.250526,11,direct
+Claim your free prize by visiting http://freestuff.com,spam,current,batch,2025-10-26T12:27:04.250532,11,direct
+Don't forget to bring your documents tomorrow.,ham,current,batch,2025-10-26T12:27:04.250537,11,direct
+You have won $500 cash! Reply 'YES' to claim.,spam,current,batch,2025-10-26T12:27:04.250542,11,direct
+Let's meet at 5pm in front of the cafe.,ham,current,batch,2025-10-26T12:27:04.250548,11,direct
+Free entry to a £1000 cash competition! Reply now!,spam,current,batch,2025-10-26T12:27:04.250553,11,direct
+Are you ready for the meeting later?,ham,current,batch,2025-10-26T12:27:04.250557,11,direct
+You have a chance to win a brand new car! Text 'CAR' to 55555.,ham,current,batch,2025-10-26T12:27:04.250563,11,direct
+Can you send me the files by tonight?,ham,current,batch,2025-10-26T12:27:04.250567,11,direct
+Congratulations! You've won a free shopping voucher!,spam,current,batch,2025-10-26T12:27:04.250572,11,direct
+Please call me when you get a chance.,ham,current,batch,2025-10-26T12:27:04.250577,11,direct
+Exclusive offer! Get a free trial by texting 'FREE' to 8008.,ham,current,batch,2025-10-26T12:27:04.250582,11,direct
+"Hey, how have you been?",ham,current,batch,2025-10-26T12:27:04.250587,11,direct
+You have won a free holiday! Claim now!,spam,current,batch,2025-10-26T12:27:04.250591,11,direct
+Let's catch up this weekend.,ham,current,batch,2025-10-26T12:27:04.250596,11,direct
+WIN a £1000 prize! Text 'WIN' to 80086.,spam,current,batch,2025-10-26T12:27:04.250620,11,direct
+Are you coming to the office tomorrow?,ham,current,batch,2025-10-26T12:27:04.250626,11,direct
+You are selected for a free gift! Reply 'GIFT' to 12345.,spam,current,batch,2025-10-26T12:27:04.250631,11,direct
+Meeting postponed to 3pm.,ham,current,batch,2025-10-26T12:27:04.250635,11,direct
+You've been chosen for a free subscription!,spam,current,batch,2025-10-26T12:27:04.250639,11,direct
+Can we reschedule our meeting?,ham,current,batch,2025-10-26T12:27:04.250644,11,direct
+Claim your free cash prize now by texting 'CASH' to 5005.,spam,current,batch,2025-10-26T12:27:04.250648,11,direct
+this is the testing test,ham,current,single,2025-11-18T14:05:19.446340,11,direct
+	Havent planning to buy later. I check already lido only got 530 show in e afternoon. U finish work already?,ham,current,single,2025-11-18T14:05:39.409742,11,direct
+Free entry in 2 a wkly comp to win FA Cup final tkts 21st May 2005.,spam,current,batch,2025-11-18T14:12:23.858137,11,direct
+U dun say so early hor... U c already then say...,ham,current,batch,2025-11-18T14:12:23.858158,11,direct
+"Nah I don't think he goes to usf, he lives around here though",ham,current,batch,2025-11-18T14:12:23.858166,11,direct
+WINNER!! As a valued network customer you have been selected to receivea £900 prize reward!,spam,current,batch,2025-11-18T14:12:23.858170,11,direct
+Had your mobile 11 months or more? U R entitled to Update to the latest colour mobiles with camera for Free!,spam,current,batch,2025-11-18T14:12:23.858175,11,direct
+I'm gonna be home soon and i don't want to talk about this stuff anymore tonight,ham,current,batch,2025-11-18T14:12:23.858178,11,direct
+"SIX chances to win CASH! From 100 to 20,000 pounds txt> CSH11 and send to 87575.",spam,current,batch,2025-11-18T14:12:23.858182,11,direct
+"URGENT! You have won a 1 week FREE membership in our £100,000 Prize Jackpot!",spam,current,batch,2025-11-18T14:12:23.858186,11,direct
+I've been searching for the right words to thank you for this breather. I promise i won't take your help for granted and will fulfill my promise. You have been wonderful and a blessing at all times.,ham,current,batch,2025-11-18T14:12:23.858189,11,direct
+As per your request 'Melle Melle (Oru Minnaminunginte Nurungu Vettam)' has been set as your caller tune for all Callers.,ham,current,batch,2025-11-18T14:12:23.858193,11,direct
+You have won 1 kg of gold! Txt 'GOLD' to 87066. Claim your prize.,spam,current,batch,2025-11-18T14:12:23.858196,11,direct
+Hey there! Are we still meeting up later?,ham,current,batch,2025-11-18T14:12:23.858199,11,direct
+Congratulations! You've won a $1000 Walmart gift card. Go to http://bit.ly/12345 to claim now.,spam,current,batch,2025-11-18T14:12:23.858203,11,direct
+"Hello, are you free this weekend to catch up?",ham,current,batch,2025-11-18T14:12:23.858206,11,direct
+Reminder: You have an appointment tomorrow at 10am.,ham,current,batch,2025-11-18T14:12:23.858210,11,direct
+Get your Free ringtone now by texting 'RING' to 8007!,spam,current,batch,2025-11-18T14:12:23.858214,11,direct
+"I'll call you later, got to go now.",ham,current,batch,2025-11-18T14:12:23.858217,11,direct
+URGENT! Your Mobile No 1234 was awarded a £2000 Bonus Caller Prize.,spam,current,batch,2025-11-18T14:12:23.858221,11,direct
+Can you pick up some groceries on your way home?,ham,current,batch,2025-11-18T14:12:23.858225,11,direct
+FreeMsg: Txt: CALL to No: 86888 & claim your free entry!,spam,current,batch,2025-11-18T14:12:23.858228,11,direct
+Where are you? Call me when you get this.,ham,current,batch,2025-11-18T14:12:23.858231,11,direct
+You have won a guaranteed £1000 cash or a £2000 prize!,spam,current,batch,2025-11-18T14:12:23.858234,11,direct
+"Hey, do you want to grab lunch today?",ham,current,batch,2025-11-18T14:12:23.858237,11,direct
+You have been specially selected to receive a £500 prize!,spam,current,batch,2025-11-18T14:12:23.858241,11,direct
+Call me when you arrive at the station.,ham,current,batch,2025-11-18T14:12:23.858244,11,direct
+Get a free subscription to our content by texting 'SUB' to 12345,spam,current,batch,2025-11-18T14:12:23.858247,11,direct
+"Hi, just checking if you got my last message.",ham,current,batch,2025-11-18T14:12:23.858251,11,direct
+Congratulations! You have won tickets to the Bahamas!,ham,current,batch,2025-11-18T14:12:23.858254,11,direct
+Are you coming to the party tonight?,ham,current,batch,2025-11-18T14:12:23.858257,11,direct
+Winner! As a valued user you have won a £100 voucher.,spam,current,batch,2025-11-18T14:12:23.858260,11,direct
+I'll be there in 10 minutes.,ham,current,batch,2025-11-18T14:12:23.858263,11,direct
+Claim your free prize by visiting http://freestuff.com,spam,current,batch,2025-11-18T14:12:23.858266,11,direct
+Don't forget to bring your documents tomorrow.,ham,current,batch,2025-11-18T14:12:23.858269,11,direct
+You have won $500 cash! Reply 'YES' to claim.,spam,current,batch,2025-11-18T14:12:23.858273,11,direct
+Let's meet at 5pm in front of the cafe.,ham,current,batch,2025-11-18T14:12:23.858276,11,direct
+Free entry to a £1000 cash competition! Reply now!,spam,current,batch,2025-11-18T14:12:23.858279,11,direct
+Are you ready for the meeting later?,ham,current,batch,2025-11-18T14:12:23.858282,11,direct
+You have a chance to win a brand new car! Text 'CAR' to 55555.,ham,current,batch,2025-11-18T14:12:23.858285,11,direct
+Can you send me the files by tonight?,ham,current,batch,2025-11-18T14:12:23.858289,11,direct
+Congratulations! You've won a free shopping voucher!,spam,current,batch,2025-11-18T14:12:23.858292,11,direct
+Please call me when you get a chance.,ham,current,batch,2025-11-18T14:12:23.858295,11,direct
+Exclusive offer! Get a free trial by texting 'FREE' to 8008.,ham,current,batch,2025-11-18T14:12:23.858298,11,direct
+"Hey, how have you been?",ham,current,batch,2025-11-18T14:12:23.858301,11,direct
+You have won a free holiday! Claim now!,spam,current,batch,2025-11-18T14:12:23.858304,11,direct
+Let's catch up this weekend.,ham,current,batch,2025-11-18T14:12:23.858307,11,direct
+WIN a £1000 prize! Text 'WIN' to 80086.,spam,current,batch,2025-11-18T14:12:23.858311,11,direct
+Are you coming to the office tomorrow?,ham,current,batch,2025-11-18T14:12:23.858314,11,direct
+You are selected for a free gift! Reply 'GIFT' to 12345.,spam,current,batch,2025-11-18T14:12:23.858317,11,direct
+Meeting postponed to 3pm.,ham,current,batch,2025-11-18T14:12:23.858320,11,direct
+You've been chosen for a free subscription!,spam,current,batch,2025-11-18T14:12:23.858323,11,direct
+Can we reschedule our meeting?,ham,current,batch,2025-11-18T14:12:23.858326,11,direct
+Claim your free cash prize now by texting 'CASH' to 5005.,spam,current,batch,2025-11-18T14:12:23.858329,11,direct
+"I call you later, don't have network. If urgnt, sms me.",ham,current,single,2025-11-18T14:12:44.879005,11,direct
+"I call you later, don't have network. If urgnt, sms me.",ham,current,single,2025-11-18T14:12:50.878583,11,direct
+"I call you later, don't have network. If urgnt, sms me.",ham,current,single,2025-11-18T14:13:10.655929,11,direct
+Smile in Pleasure Smile in Pain Smile when trouble pours like Rain Smile when sum1 Hurts U Smile becoz SOMEONE still Loves to see u Smiling!!,ham,current,single,2025-11-18T14:18:50.985667,11,direct

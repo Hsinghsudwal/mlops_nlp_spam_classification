@@ -1,0 +1,29 @@
+[project]
+name = "mlops-nlp-spam-classification"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "apscheduler>=3.11.0",
+    "black>=25.1.0",
+    "evidently>=0.7.14",
+    "flask>=3.1.2",
+    "joblib>=1.5.1",
+    "jupyterlab>=4.4.5",
+    "matplotlib>=3.10.3",
+    "mlflow>=3.3.1",
+    "nltk>=3.9.1",
+    "notebook>=7.4.4",
+    "numpy>=2.3.2",
+    "pandas>=2.3.1",
+    "plotly>=5.24.1",
+    "prometheus-client>=0.22.1",
+    "python-dotenv>=1.1.1",
+    "pyyaml>=6.0.2",
+    "requests>=2.32.4",
+    "scikit-learn>=1.7.1",
+    "seaborn>=0.13.2",
+    "streamlit>=1.49.1",
+    "yml>=0.0.1",
+]

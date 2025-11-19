@@ -14,16 +14,15 @@ class DeployServe:
     def __init__(self):
         self.DEPLOYFILE = "outputs/registry/latest_deployment.json"
         self.LOCALMODEL = "outputs/evaluate/full_pipeline.pkl"
-        self.HISTORY_FILE = "user_app/history/predictions.csv"
-        os.makedirs("user_app/history", exist_ok=True)
-        os.makedirs("user_app/uploads", exist_ok=True)
+        self.HISTORY_FILE = "outputs/user_app/history/predictions.csv"
+
+        os.makedirs("outputs/user_app/history", exist_ok=True)
+        os.makedirs("outputs/user_app/uploads", exist_ok=True)
 
         self.deployment_info = {}
         self.pipeline = None  # Main model (in-memory)
         self.prev_pipeline = None  # Previous model for A/B testing
         self.prev_model_info = None
-
-        # Track what's loaded to avoid redundant MLflow calls
         self.current_run_id = None
 
         self._load_deployment_info()
@@ -134,13 +133,12 @@ class DeployServe:
 
         return self.prev_pipeline
 
-    def _predict_text(self, pipeline, text: str):
+    def predict_text(self, pipeline, text: str):
         """Run prediction on single text input."""
         pred = pipeline.predict([text])[0]
         encoder = pipeline.named_steps["preprocessor"].label_encoder
         return encoder.classes_[pred]
 
-    
     def single_predict(self, text: str):
         """Route prediction according to deployment strategy."""
         if self.pipeline is None:
@@ -152,7 +150,7 @@ class DeployServe:
         routing_config = self.deployment_info.get("routing_config", {})
 
         # Default: use current model
-        pred = self._predict_text(self.pipeline, text)
+        pred = self.predict_text(self.pipeline, text)
         model_used = "current"
 
         # --- Strategy Routing ---
@@ -162,17 +160,16 @@ class DeployServe:
             if prev_pipeline:
                 if strategy == "shadow":
                     # Shadow mode: always use new, log old prediction silently
-                    shadow_pred = self._predict_text(prev_pipeline, text)
+                    shadow_pred = self.predict_text(prev_pipeline, text)
                     logger.debug(f"Shadow prediction (not used): {shadow_pred}")
 
                 elif strategy == "canary":
                     # Canary: route X% to old model
                     canary_ratio = routing_config.get("canary_ratio", 0.1)
                     if random.random() < canary_ratio:
-                        pred = self._predict_text(prev_pipeline, text)
+                        pred = self.predict_text(prev_pipeline, text)
                         model_used = "previous"
                         logger.debug(f"Canary routing: using previous model")
-
 
         self.log_history(
             [{"input": text, "prediction": pred, "model_used": model_used}],
@@ -197,26 +194,35 @@ class DeployServe:
         encoder = self.pipeline.named_steps["preprocessor"].label_encoder
         df["prediction"] = [encoder.classes_[p] for p in preds]
 
-   
         records = []
         for idx, row in df.iterrows():
-            records.append({
-                "input": row["text"],
-                "prediction": row["prediction"],
-                "model_used": "current"
-            })
-
+            records.append(
+                {
+                    "input": row["text"],
+                    "prediction": row["prediction"],
+                    "model_used": "current",
+                }
+            )
 
         self.log_history(records, mode="batch")
 
         logger.info(f"Batch prediction completed")
         return df
+
     def log_history(self, records: list, mode: str = "single"):
         """Append predictions to history CSV with fixed 7 columns."""
         if not records:
             return
 
-        columns = ["input", "prediction", "model_used", "mode", "timestamp", "model_version", "strategy"]
+        columns = [
+            "input",
+            "prediction",
+            "model_used",
+            "mode",
+            "timestamp",
+            "model_version",
+            "strategy",
+        ]
 
         for record in records:
             record.setdefault("input", "")
@@ -225,17 +231,23 @@ class DeployServe:
             record.setdefault("mode", mode)
             record["timestamp"] = datetime.now().isoformat()
             record["model_version"] = self.deployment_info.get("version", "local")
-            record["strategy"] = self.deployment_info.get("routing_config", {}).get("strategy", "direct")
+            record["strategy"] = self.deployment_info.get("routing_config", {}).get(
+                "strategy", "direct"
+            )
 
-        new_df = pd.DataFrame(records)[columns]  
+        new_df = pd.DataFrame(records)[columns]
         if os.path.exists(self.HISTORY_FILE):
             try:
                 old_df = pd.read_csv(self.HISTORY_FILE)
                 if list(old_df.columns) != columns:
-                    logger.warning("Old history CSV has wrong columns. Overwriting with correct columns.")
+                    logger.warning(
+                        "Old history CSV has wrong columns. Overwriting with correct columns."
+                    )
                     new_df.to_csv(self.HISTORY_FILE, mode="w", header=True, index=False)
                 else:
-                    new_df.to_csv(self.HISTORY_FILE, mode="a", header=False, index=False)
+                    new_df.to_csv(
+                        self.HISTORY_FILE, mode="a", header=False, index=False
+                    )
             except Exception as e:
                 logger.error(f"Failed to append history, overwriting file: {e}")
                 new_df.to_csv(self.HISTORY_FILE, mode="w", header=True, index=False)
@@ -244,10 +256,17 @@ class DeployServe:
 
         logger.info(f"✓ Logged {len(records)} records to history ({mode} mode)")
 
-
     def get_history(self, mode: str = None, limit: int = 100):
-      
-        columns = ["input", "prediction", "model_used", "mode", "timestamp", "model_version", "strategy"]
+
+        columns = [
+            "input",
+            "prediction",
+            "model_used",
+            "mode",
+            "timestamp",
+            "model_version",
+            "strategy",
+        ]
 
         if not os.path.exists(self.HISTORY_FILE):
             return pd.DataFrame(columns=columns)

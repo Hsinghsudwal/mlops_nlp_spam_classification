@@ -1,0 +1,93 @@
+# NLP Spam Ham classification Configuration
+
+project:
+  project_name: "spam-ham-classification"
+  author: "Harinder Singh Sudwal"
+
+base:
+  pipeline_name: "text_classification_pipeline"
+  data_path: "data/SMSSpamDat.tsv"
+  separator: "\t"
+  column_names: ["Label", "Msg"]
+  text_column: "Msg"
+  target_column: "Label"
+  test_size: 0.2
+  random_state: 42
+  cv_folds: 5
+  problem_type: "classification"
+
+storage:
+  mode: "local"  # options: local | s3 | localstack
+  local:
+    artifact_path: outputs
+  cloud:
+    bucket_name: ml-artifacts
+    region: us-east-1
+  localstack:
+    bucket: ml-artifacts
+    endpoint_url: http://localhost:4566 # set for LocalStack
+  bucket_name: "my-ml-artifacts"  # used for s3/localstack mode
+  region: "us-west-1"  
+
+dir_path:
+  # path: "outputs"  # used for local mode
+  raw_path: "raw"
+  train: "train.csv"
+  test: "test.csv"
+  transformed: "transformed"
+  models: "models" 
+  evaluation: "evaluate"
+
+algorithms:
+    - naive_bayes
+    - logistic_regression
+    - random_forest
+    - svm
+
+mlflow_config:
+  experiment_name: "ham_spam_pipeline"
+  description: "Experiment tracking for spam classifier pipeline"
+  
+  # --- Local tracking (use file-based MLflow store) ---
+  mlflow_tracking_uri: "file:./mlruns"
+
+  # --- Remote server (enable if running MLflow server / on cloud) ---
+  remote_server_uri: "http://127.0.0.1:5000"
+
+  # --- Registry options ---
+  register_model: true          # allow manual registration
+  auto_register: true          # auto-register if using remote MLflow
+
+
+  staging: "staging"
+  production: "production"
+
+  production_quality_thresholds:
+    accuracy: 0.85
+    f1_score: 0.8
+    precision: 0.75
+    recall: 0.75
+    roc_auc: 0.8
+
+policy:
+  evaluate:
+    validate_threshold: 0.80
+  
+  allow_promotion: False #True
+
+  deployment:
+    allowed_strategies: ["canary", "shadow", "direct"]
+    default_strategy: "direct"
+
+  traffic_routing:
+    target: ["staging", "production"]
+    canary_ratio: 0.1
+    shadow_enabled: false
+
+serve:
+  user_app: "user_app"
+
+monitor:
+  report_dir: "user_app/reports"
+  data_path: "data/SMSSpamData.tsv"
+  drift_threshold: 0.4 

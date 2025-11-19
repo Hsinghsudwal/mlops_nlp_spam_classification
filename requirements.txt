@@ -1,9 +1,20 @@
 pandas
 numpy
+seaborn
 notebook
-yml
+# yml
 # json
 PyYAML
+joblib
 scikit-learn
 matplotlib
+plotly
 nltk
+mlflow
+flask
+requests
+evidently
+prometheus_client
+python-dotenv
+APScheduler
+black

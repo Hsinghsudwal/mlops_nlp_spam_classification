@@ -1,27 +1,37 @@
-#   MLOPS_NLP_SPAM_CLASSIFICATION
+# MLOPS_NLP_SPAM_CLASSIFICATION
 
 ## Overview
+This project implements an end-to-end **SMS Spam Classification** system using NLP and MLOps best practices. It ingests SMS data, trains ML models to classify messages as spam or ham, deploys the model as an API, and includes monitoring for drift and performance.
 
+---
 ## Table of Content
 - [Problem Statement](#problem-statement)
 - [Installation](#installation)
-- [Development](#development)
+- [Research Notebook](#research-notebook)
 - [Components](#components)
 - [Pipeline](#pipeline)
 - [Deployment](#deployment)
 - [Monitoring](#monitoring)
 - [Best Practices](#best-practices)
-- [Next Step](#next-step)
+- [Next Steps](#next-steps)
 
-## Problem Statement 
+---
 
-Every day, people receive dozens of text messages—some from friends, some from services they use, and unfortunately, many from unknown senders trying to trick or annoy them. These unwanted messages, known as spam, often carry phishing links, fake offers, or other. Manually filtering them is exhausting, and missing a real message because it looked like spam can be frustrating or even dangerous. For mobile users and platforms alike, this creates a need for smart, automated systems that can tell the difference between helpful messages (ham) and harmful ones (spam).
+## Problem Statement
+Every day, users receive numerous SMS messages—some legitimate and some spam. Spam messages can contain phishing links, scams, or malicious content. Manually filtering messages is inefficient, and misclassifying important messages can have consequences. 
 
-### Objective
-The goal is to build an intelligent SMS classifier that can automatically identify whether a message is spam and efficiently.
-1. Understand and clean up SMS text.
-2. Learn from patterns in spam vs. ham messages.
-3. Predict the category of new, unseen messages.
+**Objective:**  
+Build an intelligent system to automatically classify SMS messages as **spam** or **ham**.
+
+**Solution Approach:**
+1. **Data Understanding & Cleaning:** Clean text, remove noise, and standardize messages.
+2. **Feature Engineering:** Transform messages into numerical representations suitable for ML models.
+3. **Model Training:** Train models such as Naive Bayes, SVM, Decision Trees, or even transformer-based models like BERT.
+4. **Evaluation:** Validate performance with metrics like accuracy, F1-score, and precision.
+5. **Deployment:** Serve the model via a Flask API for real-time predictions.
+6. **MLOps Integration:** Monitor system performance, detect drift, and retrain models automatically when needed.
+
+---
 
 ### Solution
 We’ll use machine learning to solve this. Here's the plan:
@@ -59,19 +69,22 @@ cp .env.example .env
 # Edit .env with your configuration
 ```
 
-## Development
+## Research Notebook
 
 **Notebook:** Run Jupyter Notebook: On the terminal, from your main project directory.
 
-`cd notebook` and `jupyter lab`
+```bash
+cd notebook and jupyter lab
+```
+#### Contents:
 
-Dataset:  EDA, Text preprocessing, Feature Engineering, Model Trainer and Model Evaluation.
+Dataset:  Exploratory Data Analysis (EDA), Text Preprocessing & Cleaning, Feature Engineering, Model Trainer and Model Evaluation.
 
-Build various ML models that can predict classification. The models that are used:
-    `MultinomialNB`
-    `Support Vector Classifier (SVC)`
-    `Decision Tree`
-    `Random Forest`
+Comparing models: predict classification.
+    - `MultinomialNB`
+    - `Support Vector Classifier (SVC)`
+    - `Decision Tree`
+    - `Random Forest`
 
 ## Components
 
@@ -82,34 +95,86 @@ Build various ML models that can predict classification. The models that are use
 ### 1. Data Ingestion
 - Loads data from source CSV file
 - Splits into training and testing sets
-- Saved datasets to `outputs_store/raw/`
+- Saved datasets to `outputs/raw/`
 
 ### 2. Data Transformation
 - Applies feature engineering and preprocessing
 - Handles categorical variables, scaling, and encoding
 - Creates feature matrices (X) and target vectors (y)
-- Saves preprocessed data and transformer model to `outputs_store/transformer/`
+- Saves preprocessed data and transformer model to `outputs/transformer/`
+
+### 3. Model Training
+- Train classification models
+- Evaluate and save best-performing model
+- Save model artifacts for inference to `outputs/train/`
+
+### 4. Model Serving
+- Flask API to serve predictions
+- Supports single and batch message predictions
+
+### 5. Governance & Monitoring
+- Track model performance and drift
+- Detect anomalies in prediction patterns
+- Alert on performance degradation or data drift
+
+#### Flow:
+`data_generator → data_collection → data_preprocessor → model_training → serving → governance`
 
 
-data_generator==>data_collection==>data_preprocessor==>model_training==>serving==>monitoring==>governance
+data_generator==>data_collection==>data_preprocessor==>model_training==>serving==>governance
+
 ## Pipeline
 
 
-### Quick Start
+#### Quick Start
 
 ```bash
 # Start the development environment
-docker-compose up -d
+.venv/Script/activate
 
-# Run the data ingestion pipeline
-python src/data/ingest.py
+# Run the pipeline
+uv run main.py --local --mode train
 
-# Train a model
-python src/models/train.py --config configs/model/default.yaml
+# Deploy a model
+uv run main.py --local --mode deploy
 
 # Start the prediction API
-python src/api/main.py
+uv run main.py --local --mode serve
+
+# monitoring a model
+uv run main.py --local --mode monitor
 ```
+
+## Deployment
+
+1. Model served via Flask API
+2. Dockerized for consistent deployment
+3. Endpoint supports:
+    - Single message prediction
+    - Batch CSV prediction
+
+## Monitoring
+1. Placeholder need to build evidently report and dashboard
+    - Drift detection using Evidently
+    - System metrics (CPU, memory, disk usage)
+    - Model performance metrics (accuracy, F1-score)
+2. Setup Systems:
+    - Alerts for retraining or rollback actions or feedback-loop
+    - Dashboard shows metrics as interactive cards
+
+## Best Practices
+1. Version control for datasets and models
+2. Maintain experiment logs
+3. Automated testing of pipeline components
+4. Continuous integration with Docker & CI/CD
+5. Use `.env` and `config files` for environment management
+
+## Next Steps
+- Integrate transformer-based models like BERT for improved accuracy
+- Implement advanced feature engineering (TF-IDF, embeddings)
+- Add continuous model retraining on live data
+- Expand monitoring with visual dashboards using Plotly/Grafana
+- Deploy model on cloud (AWS/GCP/Azure) with MLOps pipeline
 
 ## Tech Stack Used
 1. Python

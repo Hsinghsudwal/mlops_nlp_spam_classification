@@ -10,14 +10,16 @@ import numpy as np
 from utils.logger import logger
 from utils.artifact_manager import ArtifactManager
 from utils.config_manager import ConfigManager
-import boto3
-from botocore.exceptions import NoCredentialsError
+
+# import boto3
+# from botocore.exceptions import NoCredentialsError
 
 
 class LocalArtifactStore(ArtifactManager):
     def __init__(self, config: ConfigManager):
         self.config = config
-        self.base_path = self.config.get("artifact_path.path", "outputs")
+        # Fixed path configuration
+        self.base_path = self.config.get("storage.local.artifact_path", "outputs")
         os.makedirs(self.base_path, exist_ok=True)
         logger.info(f"LocalArtifactStore initialized at: {self.base_path}")
 
@@ -25,9 +27,13 @@ class LocalArtifactStore(ArtifactManager):
         path = os.path.join(self.base_path, subdir)
         os.makedirs(path, exist_ok=True)
         artifact_path = os.path.join(path, name)
+        if hasattr(artifact, "to_dict"):
+            artifact = artifact.to_dict()
 
         try:
-            ext = name.split('.')[-1].lower()
+            # Get file extension safely
+            ext = name.split(".")[-1].lower() if "." in name else "pkl"
+
             if ext == "pkl":
                 with open(artifact_path, "wb") as f:
                     pickle.dump(artifact, f)
@@ -47,8 +53,11 @@ class LocalArtifactStore(ArtifactManager):
                 elif isinstance(artifact, np.ndarray):
                     Image.fromarray(artifact).save(artifact_path)
                 else:
-                    raise ValueError("PNG format supports matplotlib, PIL, or numpy image arrays.")
+                    raise ValueError(
+                        "PNG format supports matplotlib, PIL, or numpy image arrays."
+                    )
             else:
+                # Default to pickle for unknown extensions
                 with open(artifact_path, "wb") as f:
                     pickle.dump(artifact, f)
 
@@ -65,7 +74,9 @@ class LocalArtifactStore(ArtifactManager):
             return None
 
         try:
-            ext = name.split('.')[-1].lower()
+            # Get file extension safely
+            ext = name.split(".")[-1].lower() if "." in name else "pkl"
+
             if ext == "pkl":
                 with open(artifact_path, "rb") as f:
                     return pickle.load(f)
@@ -78,6 +89,7 @@ class LocalArtifactStore(ArtifactManager):
                 with open(artifact_path, "r") as f:
                     return f.read()
             else:
+                # Default to pickle for unknown extensions
                 with open(artifact_path, "rb") as f:
                     return pickle.load(f)
         except Exception as e:
@@ -95,55 +107,85 @@ class LocalStackArtifactStore(LocalArtifactStore):
     """Simulated S3 artifact store using LocalStack."""
 
     def __init__(self, config: ConfigManager):
-        super().__init__(config)
-        self.bucket_name = config.get("s3.bucket", "ml-artifacts")
-        self.endpoint_url = config.get("s3.endpoint_url", "http://localhost:4566")
-        self.s3_client = boto3.client(
-            "s3",
-            aws_access_key_id="test",
-            aws_secret_access_key="test",
-            endpoint_url=self.endpoint_url,
-            region_name=config.get("s3.region", "us-east-1"),
+        self.config = config
+        self.bucket_name = config.get("storage.localstack.bucket_name", "ml-artifacts")
+        self.endpoint_url = config.get(
+            "storage.localstack.endpoint_url", "http://localhost:4566"
         )
-        logger.info(f"LocalStackArtifactStore initialized: {self.bucket_name} @ {self.endpoint_url}")
+        self.region = config.get("storage.localstack.region", "us-east-1")
 
+        # Uncomment when boto3 is available
+        # try:
+        #     import boto3
+        #     self.s3_client = boto3.client(
+        #         "s3",
+        #         aws_access_key_id="test",
+        #         aws_secret_access_key="test",
+        #         endpoint_url=self.endpoint_url,
+        #         region_name=self.region,
+        #         use_ssl=False
+        #     )
+        #     #Create bucket if it doesn't exist
+        #     self.s3_client.create_bucket(Bucket=self.bucket_name)
+        #     logger.info(f"LocalStackArtifactStore initialized: {self.bucket_name} @ {self.endpoint_url}")
+        # except ImportError:
+        #     logger.warning("boto3 not available, falling back to local storage")
+
+        logger.info(
+            f"LocalStackArtifactStore initialized: {self.bucket_name} @ {self.endpoint_url}"
+        )
 
     def save(self, artifact, subdir: str, name: str, pipeline_id: str = None) -> str:
-        pass
+        # For now, fallback to local storage
+        # TODO: Implement S3 upload when boto3 is available
+        return super().save(artifact, subdir, name, pipeline_id)
 
     def load(self, subdir: str, name: str):
-        pass
-    
+        # For now, fallback to local storage
+        # TODO: Implement S3 download when boto3 is available
+        return super().load(subdir, name)
+
     def get_base_path(self) -> str:
-        pass
+        return super().get_base_path()
 
     def resolve_path(self, relative_path: str) -> str:
-        pass
-        
+        return super().resolve_path(relative_path)
+
+
 class CloudArtifactStore(ArtifactManager):
+    """Cloud-based artifact store implementation."""
+
+    def __init__(self, config: ConfigManager):
+        self.config = config
+        self.bucket_name = config.get("storage.bucket_name", "ml-artifacts")
+        logger.info(f"CloudArtifactStore initialized with bucket: {self.bucket_name}")
 
     def save(self, artifact, subdir: str, name: str, pipeline_id: str = None) -> str:
-        pass
-    
+        # TODO: Implement cloud storage save
+        logger.warning("CloudArtifactStore.save() not implemented yet")
+        raise NotImplementedError("Cloud storage save not implemented")
+
     def load(self, subdir: str, name: str):
-        pass
+        # TODO: Implement cloud storage load
+        logger.warning("CloudArtifactStore.load() not implemented yet")
+        raise NotImplementedError("Cloud storage load not implemented")
 
     def get_base_path(self) -> str:
-        pass
+        return f"s3://{self.bucket_name}"
 
     def resolve_path(self, relative_path: str) -> str:
-        pass
+        return f"{self.get_base_path()}/{relative_path}"
 
 
 class ArtifactStoreFactory:
     @staticmethod
     def create_store(config: ConfigManager) -> ArtifactManager:
-        store_type = config.get("storage_type", "local").lower()
-        if store_type == "local":
+        mode = config.get("storage.mode")
+        if mode == "local":
             return LocalArtifactStore(config)
-        elif store_type == "localstack":
+        elif mode == "localstack":
             return LocalStackArtifactStore(config)
-        elif store_type == "cloud":
+        elif mode == "cloud":
             return CloudArtifactStore(config)
         else:
-            raise ValueError(f"Unsupported storage type: {store_type}")
+            raise ValueError(f"Unsupported storage type: {mode}")

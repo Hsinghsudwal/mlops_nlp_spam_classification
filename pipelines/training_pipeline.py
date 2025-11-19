@@ -3,25 +3,39 @@ import uuid
 import traceback
 
 from utils.logger import logger
-from utils.config_manager import ConfigManager
-from integration.storage import ArtifactStoreFactory
+from utils.audit_logger import audit_log
+
+# from utils.config_manager import ConfigManager
+# from integration.storage import ArtifactStoreFactory
 from utils.results import Status
 
 from src.components.data_ingestion import DataIngestion
 from src.components.data_transformation import DataTransformation
 from src.components.model_trainer import ModelTrainer
 from src.components.model_evaluation import ModelEvaluation
+from src.mlops.governance import Governance
 
 
 class TrainingPipeline:
-    def __init__(self, data_path: str, config_path: str, storage_mode: str):
-        self.config = ConfigManager.load_file(config_path)
-        self.config.set("storage.mode", storage_mode)
-
-        self.artifact_manager = ArtifactStoreFactory.create_store(self.config)
-        self.data_path = data_path or self.config.get("base.data_path")
-        self.storage_mode = storage_mode
+    def __init__(
+        self, data_path: str, config, artifact_manager
+    ):  # , policy_path="config/policies.yaml"):# config_path: str, storage_mode: str):
+        self.data_path = data_path
+        self.config = config
+        self.artifact_manager = artifact_manager
         self.pipeline_id = str(uuid.uuid4())
+
+        self.governance = Governance(self.config)
+        # self.config = config
+        # self.artifact_manager = artifact_manager
+        # self.data_path = data_path
+        # self.config = ConfigManager.load_file(config_path)
+        # self.config.set("storage.mode", storage_mode)
+
+        # self.artifact_manager = ArtifactStoreFactory.create_store(self.config)
+        # self.data_path = data_path or self.config.get("base.data_path")
+        # self.storage_mode = storage_mode
+        # self.pipeline_id = str(uuid.uuid4())
 
     def run(self, pipeline_id: str = None):
         pipeline_id = pipeline_id or self.pipeline_id
@@ -33,16 +47,17 @@ class TrainingPipeline:
         # print(f"Storage mode: {self.storage_mode}")
         # print(f"Data path: {self.data_path}")
 
+        pipeline_results = {}
+
         node = {
             "ingeste": DataIngestion(self.data_path),
             "transformer": DataTransformation(),
             "trainer": ModelTrainer(),
-            "evaluate": ModelEvaluation(),
+            "evaluate": ModelEvaluation(governance=self.governance),
         }
 
         try:
             # ML Pipeline
-            pipeline_results = {}
 
             logger.info("======== Data Ingestion ========")
             ingestion_results = node["ingeste"].run(
@@ -113,6 +128,12 @@ class TrainingPipeline:
                 "storage_mode": self.config.get("storage.mode"),
                 "status": "completed",
             }
+            #     self.artifact_manager.save(artifact=pipeline_results,
+            #     subdir="registry",
+            #     name="pipeline_results.json",
+            #     pipeline_id=pipeline_id,
+            # )
+            # audit_log("Pipeline complete",details=pipeline_results)
             # logger.info(f"pipeline_results: {pipeline_results}")
             return pipeline_results
 

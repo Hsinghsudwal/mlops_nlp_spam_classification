@@ -1,162 +1,215 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>ML Dashboard</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .form-group { margin: 10px 0; }
-    button { padding: 10px 15px; background: #007bff; color: white; border: none; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    pre { background: #f8f9fa; padding: 10px; border-radius: 4px; }
-    .chat-box { border: 1px solid #ddd; padding: 10px; margin: 10px 0; background: #fafafa; }
-  </style>
-  <script>
-    function toggleInputs(model=null) {
-      // if (!mode || mode === 'None') {
-      // mode = document.getElementById("mode").value;
-      // } else {
-      // document.getElementById("mode").value = mode;
-      // }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ML Dashboard - Spam Classifier</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 20px;
+  }
+  .container {
+    max-width: 1200px;
+    margin: auto;
+    background: #fff;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  h1 { text-align: center; margin-bottom: 24px; }
+  h2 { border-bottom: 2px solid #007bff; padding-bottom: 8px; margin-top: 0; }
+  select, input[type="text"], input[type="file"], button {
+    padding: 8px 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+  button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  button:hover { background: #0056b3; }
+  .section { display: none; margin-top: 20px; }
+  .section.active { display: block; }
+  .result-box {
+    margin-top: 15px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    border-left: 4px solid #007bff;
+  }
 
-      const mode = document.getElementById("mode").value;
-      document.getElementById("form").style.display = mode === "dash" ? "block" : "none";
-      document.getElementById("single-form").style.display = mode === "single" ? "block" : "none";
-      document.getElementById("batch-form").style.display = mode === "batch" ? "block" : "none";
-      document.getElementById("history-section").style.display = mode === "history" ? "block" : "none";
-      document.getElementById("monitoring").style.display = mode === "monitoring" ? "block" : "none";
-      document.getElementById("drift").style.display = mode === "drift" ? "block" : "none";
+  pre { background:#f8f9fa; padding:10px; border-radius:5px; overflow-x:auto; }
 
-      document.getElementById("mode").value = mode;
-    }
-    function loadHistory() {
-      const mode = document.getElementById("historyMode").value;
-      fetch("/history?mode=" + mode)
-        .then(res => res.text())
-        .then(html => { document.getElementById("historyTable").innerHTML = html })
-        .catch(err => { document.getElementById("historyTable").innerHTML = "Error: " + err });
-    }
+  /* Monitoring cards */
+  .cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 15px;
+  }
+  .card {
+    flex: 1 1 calc(25% - 20px);
+    background: #007bff;
+    color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    background: #0056b3;
+  }
+  .card h3 { margin: 0; font-size: 18px; }
+  iframe {
+    width: 100%;
+    height: 500px;
+    border: none;
+    margin-top: 20px;
+  }
 
-    function loadMonitoring() {
-      fetch('/api/monitoring')
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('monitoringResult').textContent = JSON.stringify(data, null, 2);
-        })
-        .catch(error => {
-          document.getElementById('monitoringResult').textContent = 'Error: ' + error;
-        });
-    }
-
-    function loadDrift() {
-      fetch('/api/drift')
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('driftResult').textContent = JSON.stringify(data, null, 2);
-        })
-        .catch(error => {
-          document.getElementById('driftResult').textContent = 'Error: ' + error;
-        });
-    }
-
-    function triggerAuto(){
-      fetch("/trigger_retrain", {method:"POST", headers: {'Content-Type':'application/json'}, body: JSON.stringify({reason:"ui_manual", manual:false})})
-        .then(r=>r.json()).then(j=>alert(JSON.stringify(j)))
-    }
-    function requestApproval(){
-      fetch("/trigger_retrain", {method:"POST", headers: {'Content-Type':'application/json'}, body: JSON.stringify({reason:"ui_request_approval", manual:true})})
-        .then(r=>r.json()).then(j=>alert(JSON.stringify(j)))
-    }
-  </script>
+  @media(max-width: 768px) {
+    .card { flex: 1 1 calc(50% - 20px); }
+  }
+  @media(max-width: 480px) {
+    .card { flex: 1 1 100%; }
+  }
+</style>
 </head>
-<!-- <body onload="toggleInputs()"> -->
-<body onload="toggleInputs('{{ active_mode}}')">
-  <h1>ML Dashboard</h1>
+<body>
 
-  <div class="form-group">
-    <label for="mode">Choose Dashboard:</label>
-    <select id="mode" onchange="toggleInputs()">
-      <option value="dash" {% if active_mode=='dash' %}selected{% endif %}>Dashboard</option>
-      <option value="single" {% if active_mode=='single' %}selected{% endif %}>Single Prediction</option>
-      <option value="batch" {% if active_mode=='batch' %}selected{% endif %}>Batch Prediction</option>
-      <option value="history" {% if active_mode=='history' %}selected{% endif %}>Prediction History</option>
-      <option value="monitoring" {% if active_mode=='monitoring' %}selected{% endif %}>Monitoring</option>
-      <option value="drift" {% if active_mode=='drift' %}selected{% endif %}>Data Drift</option>
-</select>
+<div class="container">
+  <h1>ML Dashboard - Spam Classifier</h1>
+
+  <!-- Dashboard Selector -->
+  <div style="background: #fafafa; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
+    <label for="mode" style="margin-right: 12px; font-weight: 600;">Select Dashboard:</label>
+    <select id="mode" onchange="toggleSection()">
+      <option value="dash">Dashboard</option>
+      <option value="single">Single Prediction</option>
+      <option value="batch">Batch Prediction</option>
+      <option value="history">Prediction History</option>
+      <option value="monitoring">Monitoring</option>
     </select>
   </div>
 
-  <hr>
-
-  <!-- Dash -->
-  <div id="form" style="display:none;">
-  <h2>Welcome to the ML Spam Classifier Dashboard</h2>
-  <p>
-    This interactive dashboard demonstrates a machine learning model trained on the 
-    Ham/Spam SMS dataset. The dataset contains thousands of real-world SMS messages 
-    labeled as <em>Ham (real)</em> or <em>Spam (unwanted)</em>. 
-  </p>
-  <p>
+  <!-- DASHBOARD -->
+  <div id="dash-section" class="section">
+    <h2>Dashboard Overview</h2>
+    <p style="color: #6c757d;">A machine learning model trained on the Ham/Spam SMS dataset.</p>
     <ul>
-      <li><strong>Single Prediction</strong> – test one SMS message at a time.</li>
-      <li><strong>Batch Prediction</strong> – upload a CSV file of messages.</li>
-      <li><strong>Prediction History</strong> – explore past predictions.</li>
-      <li><strong>Monitoring</strong> – check system performance in real time.</li>
-      <li><strong>Data Drift</strong> – see if new data is shifting away from the training distribution.</li>
+      <li>Single Prediction: Try to test individual messages</li>
+      <li>Batch Prediction: Use to process CSV files</li>
+      <li>Prediction History: View past predictions and analysis</li>
+      <li>Monitoring: Track model metrics and health</li>
     </ul>
-  </p>
-  <p>
-    <b>To get stated select the dropdown menu!
-  </p>
-</div>
+  </div>
 
-  <!-- Single Prediction -->
-  <div id="single-form">
-    <h2>Single Text Prediction</h2>
-    <form action="/predict_single" method="post">
-      <div class="form-group">
-        <label for="feature1">Text Input:</label><br>
-        <textarea id="feature1" name="feature1" rows="4" cols="50" required>{{ feature1 or '' }}</textarea>
-      </div>
+  <!-- SINGLE -->
+  <div id="single-section" class="section">
+    <h2>Single Prediction</h2>
+    <form action="/predict_single" method="POST">
+      <input type="text" id="feature1" name="feature1" placeholder="Type your message here..." style="width:100%;"><br><br>
       <button type="submit">Predict</button>
     </form>
     {% if prediction %}
-
-      <p><strong>Prediction:</strong> {{ prediction }}</p>
+    <div class="result-box">
+      <strong>Prediction Result:</strong> {{ prediction }}
+    </div>
     {% endif %}
-    <!-- <br> -->
-    <!-- <a href="/predictions_csv">Download Predictions CSV</a> -->
   </div>
 
-  <!-- Batch Prediction -->
-  <div id="batch-form" style="display:none;">
+  <!-- BATCH -->
+  <div id="batch-section" class="section">
     <h2>Batch Prediction</h2>
-    <form action="/predict_batch" method="post" enctype="multipart/form-data">
-      <div class="form-group">
-        <label for="file">Upload CSV File:</label>
-        <input type="file" id="file" name="file" accept=".csv" required>
-      </div>
-      <button type="submit">Predict Batch</button>
+    <form action="/predict_batch" method="POST" enctype="multipart/form-data">
+      <input type="file" id="file" name="file" accept=".csv" required><br><br>
+      <button type="submit">Upload & Predict</button>
     </form>
     {% if batch_result %}
-      <h3>Batch Results</h3>
-      <div>{{ batch_result|safe }}</div>
+    <div class="result-box">
+      <h4>Batch Prediction Results:</h4>
+      {{ batch_result|safe }}
+    </div>
     {% endif %}
   </div>
 
-  <!-- History -->
-  <div id="history-section" style="display:none;">
+  <!-- HISTORY -->
+  <div id="history-section" class="section">
     <h2>Prediction History</h2>
-    <label for="historyMode">Show:</label>
-    <select id="historyMode" onchange="loadHistory()">
-      <option value="all">All</option>
-      <option value="single">Single</option>
-      <option value="batch">Batch</option>
-    </select>
-    <button onclick="loadHistory()">Load History</button>
-    <a href="/predictions_csv">Download Full CSV</a>
-    <div id="historyTable"></div>
+    <form action="/history" method="GET" style="margin-bottom: 16px;">
+      <label>Mode:</label>
+      <select name="mode" onchange="this.form.submit()">
+        <option value="all" {% if current_mode=='all' %} selected {% endif %}>All</option>
+        <option value="single" {% if current_mode=='single' %} selected {% endif %}>Single</option>
+        <option value="batch" {% if current_mode=='batch' %} selected {% endif %}>Batch</option>
+      </select>
+      <label>Sort:</label>
+      <select name="sort" onchange="this.form.submit()">
+        <option value="desc" {% if sort_order=='desc' %} selected {% endif %}>Newest First</option>
+        <option value="asc" {% if sort_order=='asc' %} selected {% endif %}>Oldest First</option>
+      </select>
+      <a href="/predictions_csv" style="background: #28a745; color: white; padding: 6px 10px; border-radius: 4px; text-decoration: none;">⬇️ Download CSV</a>
+    </form>
+    <div class="result-box">
+      {% if history_table %}
+        {{ history_table|safe }}
+      {% else %}
+        <p style="color: #6c757d;">No history data available yet.</p>
+      {% endif %}
+    </div>
   </div>
+
+  <!-- MONITORING -->
+  <div id="monitoring-section" class="section">
+    <h2>Monitoring</h2>
+    <div class="cards-container">
+      <div class="card" onclick="loadMonitor('/monitor/metrics')">
+        <h3>Metrics</h3>
+      </div>
+      <div class="card" onclick="loadMonitor('/monitor/drift')">
+        <h3>Drift Detection</h3>
+      </div>
+      <div class="card" onclick="loadMonitor('/monitor/performance')">
+        <h3>Performance</h3>
+      </div>
+      <div class="card" onclick="loadMonitor('/monitor/health')">
+        <h3>System Health</h3>
+      </div>
+    </div>
+    <iframe id="monitor_iframe" src="" style="width:100%; height:500px; border:none;"></iframe>
+  </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  let active = "{{ active_mode }}";
+  if (!active) active = "dash";
+  document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+  const sectionId = active === "monitoring" ? "monitoring-section" : active + "-section";
+  document.getElementById(sectionId).classList.add("active");
+  document.getElementById("mode").value = active;
+});
+
+function toggleSection() {
+  const mode = document.getElementById("mode").value;
+  document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+  const sectionId = mode === "monitoring" ? "monitoring-section" : mode + "-section";
+  document.getElementById(sectionId).classList.add("active");
+}
+
+function loadMonitor(url) {
+  document.getElementById("monitor_iframe").src = url;
+}
+</script>
 
 </body>
 </html>

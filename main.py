@@ -8,6 +8,7 @@ from integration.storage import ArtifactStoreFactory
 from pipelines.training_pipeline import TrainingPipeline
 from pipelines.experiment_pipeline import ExperimentPipeline
 from pipelines.deployment_pipeline import DeploymentPipeline
+from pipelines.monitoring_pipeline import MonitorPipeline
 
 # from pipelines.orchestrating_pipeline import OrchestratingPipeline
 
@@ -50,6 +51,14 @@ def serve_pipeline():
     subprocess.run([sys.executable, "app.py"], check=True)
 
 
+def monitor_pipeline(config, artifact_manager):
+    """Standalone monitoring"""
+    monitor_pipeline = MonitorPipeline(config=config, artifact_manager=artifact_manager)
+    monitor_result = monitor_pipeline.run()
+    print("Monitor result:", monitor_result)
+    return monitor_result
+
+
 def run_orchestrated_pipeline():
     """Run orchestrated autonomous system."""
     print("Running orchestrated Autonomus System...")
@@ -78,7 +87,9 @@ def main():
         "--data", default="data/SMSSpamData.tsv", help="Path to dataset"
     )
     parser.add_argument(
-        "--mode", choices=["train", "deploy", "serve", "orchestrated"], default="train"
+        "--mode",
+        choices=["train", "deploy", "serve", "monitor", "orchestrated"],
+        default="train",
     )
     parser.add_argument(
         "--prod", choices=["y", "n"], default="n", help="Promote model to production?"
@@ -106,6 +117,8 @@ def main():
             deploy_pipeline(config, artifact_manager)
         elif args.mode == "serve":
             serve_pipeline()
+        elif args.mode == "monitor":
+            monitor_pipeline(config, artifact_manager)
         elif args.mode == "orchestrated":
             run_orchestrated_pipeline()
         else:
@@ -120,4 +133,9 @@ def main():
 
 
 if __name__ == "__main__":
+    """1. Train
+    2. deployment
+    3. serve
+    4. monitor
+    5. orchestrate"""
     main()

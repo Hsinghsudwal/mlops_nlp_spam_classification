@@ -123,21 +123,6 @@ class MLflowTracker:
 
         logger.info("Metrics logged to MLflow")
 
-    # def log_label_encoder(self, label_encoder) -> None:
-    #     """Log fitted label encoder as MLflow artifact."""
-    #     if label_encoder is None:
-    #         logger.warning("No label encoder found to log")
-    #         return
-
-    #     try:
-    #         with tempfile.TemporaryDirectory() as tmpdir:
-    #             path = os.path.join(tmpdir, "label_encoder.pkl")
-    #             joblib.dump(label_encoder, path)
-    #             mlflow.log_artifact(path, artifact_path="preprocessing")
-    #         logger.info("Label encoder logged to MLflow as artifact")
-    #     except Exception as e:
-    #         logger.error(f"Failed to log label encoder: {e}")
-
     def log_model(self, extracted_data: Dict[str, Any]) -> None:
         """Log trained model to MLflow."""
         # model = extracted_data["best_model"]
@@ -168,15 +153,6 @@ class MLflowTracker:
             ),
 
             logger.info(f"Model {model_name} logged to MLflow")
-
-            # Log label encoder
-            # if label_encoder is not None:
-            #     with tempfile.TemporaryDirectory() as tmpdir:
-            #         path = os.path.join(tmpdir, "label_encoder.pkl")
-            #         joblib.dump(label_encoder, path)
-            #         mlflow.log_artifact(path, artifact_path="preprocessing")
-            #     logger.info("Label encoder logged to MLflow as artifact")
-            # mlflow.log_model_params()
 
             # Register
             registered_name = f"{model_name}_pipeline"

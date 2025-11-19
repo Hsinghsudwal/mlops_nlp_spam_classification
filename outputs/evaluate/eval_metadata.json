@@ -1,0 +1,16 @@
+{
+    "pipeline_id": "14e1ab5d-f6d2-4820-b46b-c80586fe6fd2",
+    "best_model": "naive_bayes",
+    "cv_score": 0.974195618366022,
+    "test_score": 0.9775784753363229,
+    "accuracy": 0.9775784753363229,
+    "roc_auc": 0.9832492670251644,
+    "artifacts": {
+        "data": "raw/train.csv raw/test.csv",
+        "transformer": "transformed/transformed.pkl",
+        "trained_models": "models/trained_output.pkl",
+        "metrics_json": "evaluate/evaluation_metrics.json",
+        "complete_pipeline": "evaluate/complete_pipeline.pkl",
+        "confusion_matrix": "evaluate/confusion_matrix.png"
+    }
+}

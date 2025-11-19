@@ -1,0 +1,88 @@
+{
+    "status": "success",
+    "data": "Deployment completed successfully",
+    "metrics": {
+        "model_name": "naive_bayes_pipeline",
+        "version": 11,
+        "run_id": "966aa7b7afda401b905d5f79c1a14b88",
+        "metrics": {
+            "accuracy": 0.9775784753363229,
+            "cv_score": 0.974195618366022,
+            "f1_score": 0.9766950623711795,
+            "precision": 0.9781441041118949,
+            "recall": 0.9775784753363229,
+            "roc_auc": 0.9832492670251644,
+            "test_score": 0.9775784753363229
+        },
+        "evaluation_decision": {
+            "approved": true,
+            "reasons": [],
+            "actions": []
+        },
+        "strategy_decision": {
+            "approved": true,
+            "reasons": [],
+            "actions": []
+        },
+        "routing_config": {
+            "strategy": "direct",
+            "target": "production",
+            "shadow_enabled": false,
+            "canary_ratio": null,
+            "available_targets": [
+                "staging",
+                "production"
+            ]
+        },
+        "previous_model": {
+            "model_name": "naive_bayes_pipeline",
+            "version": 10,
+            "run_id": "b891dff817ee412c89f5ab3ceb37cb9d",
+            "alias": [],
+            "routing_config": {
+                "strategy": "direct",
+                "target": "production",
+                "shadow_enabled": false,
+                "canary_ratio": null,
+                "available_targets": [
+                    "staging",
+                    "production"
+                ]
+            },
+            "deployment_timestamp": "2025-10-18T21:57:18.221030",
+            "metrics": {
+                "accuracy": 0.9775784753363229,
+                "cv_score": 0.974195618366022,
+                "f1_score": 0.9766950623711795,
+                "precision": 0.9781441041118949,
+                "recall": 0.9775784753363229,
+                "roc_auc": 0.9832492670251644,
+                "test_score": 0.9775784753363229
+            },
+            "evaluation_decision": {
+                "approved": true,
+                "reasons": [],
+                "actions": []
+            },
+            "strategy_decision": {
+                "approved": true,
+                "reasons": [],
+                "actions": []
+            }
+        },
+        "timestamp": "2025-10-26T04:56:10.723512",
+        "tags": {
+            "deployment_id": "322f7a74-33e8-4c57-ad9f-9441cb62f61b",
+            "deployment_status": "active",
+            "deployment_alias": "production",
+            "deployed_strategy": "direct",
+            "routing_target": "{\"strategy\": \"direct\", \"target\": \"production\", \"shadow_enabled\": false, \"canary_ratio\": null, \"available_targets\": [\"staging\", \"production\"]}",
+            "deployment_timestamp": "2025-10-26T04:56:03.254249",
+            "deployed_by": "Harinder Singh Sudwal",
+            "evaluation_decision": "{\"approved\": true, \"reasons\": [], \"actions\": []}",
+            "strategy_decision": "{\"approved\": true, \"reasons\": [], \"actions\": []}",
+            "previous_model": "{\"model_name\": \"naive_bayes_pipeline\", \"version\": 10, \"run_id\": \"b891dff817ee412c89f5ab3ceb37cb9d\", \"alias\": [], \"routing_config\": {\"strategy\": \"direct\", \"target\": \"production\", \"shadow_enabled\": false, \"canary_ratio\": null, \"available_targets\": [\"staging\", \"production\"]}, \"deployment_timestamp\": \"2025-10-18T21:57:18.221030\", \"metrics\": {\"accuracy\": 0.9775784753363229, \"cv_score\": 0.974195618366022, \"f1_score\": 0.9766950623711795, \"precision\": 0.9781441041118949, \"recall\": 0.9775784753363229, \"roc_auc\": 0.9832492670251644, \"test_score\": 0.9775784753363229}, \"evaluation_decision\": {\"approved\": true, \"reasons\": [], \"actions\": []}, \"strategy_decision\": {\"approved\": true, \"reasons\": [], \"actions\": []}}"
+        }
+    },
+    "message": ""
+}
